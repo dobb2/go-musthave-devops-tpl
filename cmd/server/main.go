@@ -13,6 +13,7 @@ func main() {
 	// маршрутизация запросов обработчику
 	http.HandleFunc("/update/gauge/", handler.Gauge)
 	http.HandleFunc("/update/counter/", handler.Counter)
+	http.HandleFunc("/", handler.Other)
 	// запуск сервера с адресом localhost, порт 8080
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {

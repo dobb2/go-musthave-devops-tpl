@@ -15,12 +15,21 @@ func New(metrics storage.MetricCreatorUpdater) MetricsHandler {
 	return MetricsHandler{storage: metrics}
 }
 
+func (m MetricsHandler) Other(w http.ResponseWriter, r *http.Request) {
+	http.Error(w, "Not found!", http.StatusNotImplemented)
+	return
+}
+
 func (m MetricsHandler) Gauge(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Only GET requests are allowed!", http.StatusMethodNotAllowed)
 		return
 	}
 	path := strings.Split(r.URL.Path, "/")
+	if len(path) < 5 {
+		http.Error(w, "Incorrect url", http.StatusNotFound)
+		return
+	}
 	NameMetric := path[3]
 	if value, err := strconv.ParseFloat(path[4], 32); err == nil {
 		m.storage.UpdateGauge(NameMetric, value)
@@ -38,7 +47,13 @@ func (m MetricsHandler) Counter(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	path := strings.Split(r.URL.Path, "/")
-	NameMetric := path[3]
+	if len(path) < 5 {
+		http.Error(w, "Incorrect url", http.StatusNotFound)
+		return
+	}
+
+	NameMetric := path[3] // len 5
+	// [ update counter PollCount 5]
 	value, err := strconv.ParseInt(path[4], 10, 64)
 	if err != nil {
 		http.Error(w, "The value does not match the type!", http.StatusBadRequest)
