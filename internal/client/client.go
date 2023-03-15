@@ -41,7 +41,7 @@ func SendMetric(TypeMetrics, NameMetric, ValueMetric string) {
 		log.Println(err)
 		os.Exit(1)
 	}
-	log.Println(string(response.StatusCode))
+	log.Println(response.StatusCode)
 	log.Println(string(body))
 }
 
