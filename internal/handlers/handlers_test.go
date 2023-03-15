@@ -4,7 +4,7 @@ import (
 	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics/cache"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -104,7 +104,7 @@ func TestMetricsHandler_Update(t *testing.T) {
 			result := w.Result()
 			assert.Equal(t, tt.want.code, result.StatusCode)
 
-			_, err := ioutil.ReadAll(result.Body)
+			_, err := io.ReadAll(result.Body)
 			require.NoError(t, err)
 			err = result.Body.Close()
 			require.NoError(t, err)

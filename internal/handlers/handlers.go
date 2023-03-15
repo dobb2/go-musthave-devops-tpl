@@ -17,7 +17,6 @@ func New(metrics storage.MetricCreatorUpdater) MetricsHandler {
 
 func (m MetricsHandler) Other(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "Not found!", http.StatusNotFound)
-	return
 }
 
 func (m MetricsHandler) Update(w http.ResponseWriter, r *http.Request) {
