@@ -11,8 +11,7 @@ func main() {
 	datastore := cache.Create()
 	handler := handlers.New(datastore)
 	// маршрутизация запросов обработчику
-	http.HandleFunc("/update/gauge/", handler.Gauge)
-	http.HandleFunc("/update/counter/", handler.Counter)
+	http.HandleFunc("/update/", handler.Update)
 	http.HandleFunc("/", handler.Other)
 	// запуск сервера с адресом localhost, порт 8080
 	err := http.ListenAndServe(":8080", nil)

@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func TestMetricsHandler_Gauge(t *testing.T) {
+func TestMetricsHandler_Update(t *testing.T) {
 	type want struct {
 		code int
 	}
@@ -21,7 +21,7 @@ func TestMetricsHandler_Gauge(t *testing.T) {
 		want   want
 	}{
 		{
-			name:   "positive test #1",
+			name:   "positive gauge test #1",
 			url:    "/update/gauge/HeapInuse/933888.43",
 			method: "POST",
 			want: want{
@@ -29,7 +29,7 @@ func TestMetricsHandler_Gauge(t *testing.T) {
 			},
 		},
 		{
-			name:   "negative test #2",
+			name:   "negative gauge test #2",
 			url:    "/update/gauge/HeapInuse/933888.43",
 			method: "GET",
 			want: want{
@@ -37,7 +37,7 @@ func TestMetricsHandler_Gauge(t *testing.T) {
 			},
 		},
 		{
-			name:   "negative test #3",
+			name:   "negative gauge test #3",
 			url:    "/update/gauge/HeapInuse/933888fdfd",
 			method: "POST",
 			want: want{
@@ -45,45 +45,15 @@ func TestMetricsHandler_Gauge(t *testing.T) {
 			},
 		},
 		{
-			name:   "negative test #4",
+			name:   "negative gauge test #4",
 			url:    "/update/gauge/HeapInuse/",
 			method: "POST",
 			want: want{
 				code: http.StatusNotFound,
 			},
 		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			req := httptest.NewRequest(tt.method, tt.url, nil)
-			w := httptest.NewRecorder()
-
-			a := New(cache.Create())
-			a.Gauge(w, req)
-
-			result := w.Result()
-			assert.Equal(t, tt.want.code, result.StatusCode)
-
-			_, err := ioutil.ReadAll(result.Body)
-			require.NoError(t, err)
-			err = result.Body.Close()
-			require.NoError(t, err)
-		})
-	}
-}
-
-func TestMetricsHandler_Counter(t *testing.T) {
-	type want struct {
-		code int
-	}
-	tests := []struct {
-		name   string
-		url    string
-		method string
-		want   want
-	}{
 		{
-			name:   "positive test #1",
+			name:   "positive counter test #1",
 			url:    "/update/counter/PollCount/13",
 			method: "POST",
 			want: want{
@@ -91,7 +61,7 @@ func TestMetricsHandler_Counter(t *testing.T) {
 			},
 		},
 		{
-			name:   "negative test #2",
+			name:   "negative counter test #2",
 			url:    "/update/counter/PollCount/13",
 			method: "GET",
 			want: want{
@@ -99,7 +69,7 @@ func TestMetricsHandler_Counter(t *testing.T) {
 			},
 		},
 		{
-			name:   "negative test #3",
+			name:   "negative counter test #3",
 			url:    "/update/counter/PollCount/13cd",
 			method: "POST",
 			want: want{
@@ -107,7 +77,7 @@ func TestMetricsHandler_Counter(t *testing.T) {
 			},
 		},
 		{
-			name:   "negative test #4",
+			name:   "negative counter test #4",
 			url:    "/update/counter/PollCount/13.33",
 			method: "POST",
 			want: want{
@@ -115,7 +85,7 @@ func TestMetricsHandler_Counter(t *testing.T) {
 			},
 		},
 		{
-			name:   "negative test #5",
+			name:   "negative counter test #5",
 			url:    "/update/counter/PollCount/",
 			method: "POST",
 			want: want{
@@ -129,7 +99,7 @@ func TestMetricsHandler_Counter(t *testing.T) {
 			w := httptest.NewRecorder()
 
 			a := New(cache.Create())
-			a.Counter(w, req)
+			a.Update(w, req)
 
 			result := w.Result()
 			assert.Equal(t, tt.want.code, result.StatusCode)
