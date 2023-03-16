@@ -18,7 +18,7 @@ func New(metrics storage.MetricCreatorUpdater) MetricsHandler {
 	return MetricsHandler{storage: metrics}
 }
 
-func (m MetricsHandler) Other(w http.ResponseWriter, r *http.Request) {
+func (m MetricsHandler) GetAllMetrics(w http.ResponseWriter, r *http.Request) {
 	metrics, err := m.storage.GetAllMetrics()
 	if err != nil {
 		http.Error(w, "No metrics", http.StatusBadRequest)
