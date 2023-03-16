@@ -34,7 +34,7 @@ func (m Metrics) GetAllMetrics() ([]metrics.Metric, error) {
 	c := make([]metrics.Metric, 0, countMetrics)
 
 	if countMetrics == 0 {
-		return c, errors.New("No metrics")
+		return c, errors.New("no metrics")
 	}
 
 	for NameMetric, ValueMetric := range m.GaugeMetrics { // Порядок не определен
@@ -59,7 +59,7 @@ func (m Metrics) GetAllMetrics() ([]metrics.Metric, error) {
 func (m Metrics) GetValue(typeMetric string, NameMetric string) (metrics.Metric, error) {
 	switch typeMetric {
 	case "gauge":
-		if value, ok := m.GaugeMetrics[NameMetric]; ok == true {
+		if value, ok := m.GaugeMetrics[NameMetric]; ok {
 			ResultMetric := metrics.Metric{
 				TypeMetric: typeMetric,
 				NameMetric: NameMetric,
@@ -69,7 +69,7 @@ func (m Metrics) GetValue(typeMetric string, NameMetric string) (metrics.Metric,
 		}
 		return metrics.Metric{}, errors.New("unknown metric")
 	case "counter":
-		if value, ok := m.CounterMetrics[NameMetric]; ok == true {
+		if value, ok := m.CounterMetrics[NameMetric]; ok {
 			ResultMetric := metrics.Metric{
 				TypeMetric: typeMetric,
 				NameMetric: NameMetric,
@@ -79,7 +79,7 @@ func (m Metrics) GetValue(typeMetric string, NameMetric string) (metrics.Metric,
 		}
 		return metrics.Metric{}, errors.New("unknown metric")
 	default:
-		return metrics.Metric{}, errors.New("Invalid type metric")
+		return metrics.Metric{}, errors.New("invalid type metric")
 	}
 }
 
