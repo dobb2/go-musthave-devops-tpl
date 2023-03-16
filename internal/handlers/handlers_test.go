@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func TestMetricsHandler_Update(t *testing.T) {
+func TestMetricsHandler_UpdateMetric(t *testing.T) {
 	type want struct {
 		code int
 	}
@@ -99,7 +99,7 @@ func TestMetricsHandler_Update(t *testing.T) {
 			w := httptest.NewRecorder()
 
 			a := New(cache.Create())
-			a.Update(w, req)
+			a.UpdateMetric(w, req)
 
 			result := w.Result()
 			assert.Equal(t, tt.want.code, result.StatusCode)

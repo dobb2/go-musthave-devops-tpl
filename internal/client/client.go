@@ -1,53 +1,38 @@
 package client
 
 import (
-	"bytes"
 	"fmt"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics/cache"
-	"io"
+	"github.com/go-resty/resty/v2"
 	"log"
-	"net/http"
-	"net/url"
-	"os"
-	"path"
 	"strconv"
-	"strings"
+	"time"
 )
 
-func SendMetric(TypeMetrics, NameMetric, ValueMetric string) {
-	path := path.Join("update", TypeMetrics, NameMetric, ValueMetric)
-	endpoint, err := url.Parse("http://127.0.0.1:8080/path")
+func SendMetric(TypeMetric, NameMetric, ValueMetric string) {
+	client := resty.New().
+		SetBaseURL("http://127.0.0.1:8080/").
+		SetRetryCount(2).
+		SetRetryWaitTime(1 * time.Second)
+
+	resp, err := client.R().
+		SetHeader("Content-Type", "text/plain").
+		SetPathParams(map[string]string{
+			"typeMetric":  TypeMetric,
+			"nameMetric":  NameMetric,
+			"valueMetric": ValueMetric,
+		}).Post("/update/{typeMetric}/{nameMetric}/{valueMetric}")
+
 	if err != nil {
-		log.Println(err)
-		os.Exit(1)
+		log.Panic(err)
 	}
-	endpoint.Path = path
-	var data = []byte(strings.Join([]string{NameMetric, ValueMetric}, ": "))
-	client := &http.Client{}
-	request, err := http.NewRequest(http.MethodPost, endpoint.String(), bytes.NewBuffer(data))
-	if err != nil {
-		log.Println(err)
-		os.Exit(1)
-	}
-	request.Header.Add("Content-Type", "text/plain")
-	response, err := client.Do(request)
-	if err != nil {
-		log.Println(err)
-		os.Exit(1)
-	}
-	defer response.Body.Close()
-	body, err := io.ReadAll(response.Body)
-	if err != nil {
-		log.Println(err)
-		os.Exit(1)
-	}
-	log.Println(response.StatusCode)
-	log.Println(string(body))
+
+	fmt.Println(resp.StatusCode())
 }
 
 func PutMetric(m *cache.Metrics) {
 	for NameMetric, ValueMetric := range m.GaugeMetrics { // Порядок не определен
-		SendMetric("gauge", NameMetric, fmt.Sprintf("%f", ValueMetric))
+		SendMetric("gauge", NameMetric, strconv.FormatFloat(ValueMetric, 'f', -1, 64))
 	}
 	for NameMetric, ValueMetric := range m.CounterMetrics { // Порядок не определен
 		SendMetric("counter", NameMetric, strconv.FormatInt(ValueMetric, 10))

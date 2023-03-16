@@ -1,8 +1,11 @@
 package cache
 
 import (
+	"errors"
+	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics"
 	"math/rand"
 	"runtime"
+	"strconv"
 	"time"
 )
 
@@ -24,6 +27,60 @@ func (m Metrics) UpdateGauge(typeMetric string, value float64) {
 
 func (m Metrics) UpdateCounter(typeMetric string, value int64) {
 	m.CounterMetrics[typeMetric] = value
+}
+
+func (m Metrics) GetAllMetrics() ([]metrics.Metric, error) {
+	countMetrics := len(m.GaugeMetrics) + len(m.CounterMetrics)
+	c := make([]metrics.Metric, 0, countMetrics)
+
+	if countMetrics == 0 {
+		return c, errors.New("No metrics")
+	}
+
+	for NameMetric, ValueMetric := range m.GaugeMetrics { // Порядок не определен
+		metric := metrics.Metric{
+			TypeMetric: "gauge",
+			NameMetric: NameMetric,
+			Value:      strconv.FormatFloat(ValueMetric, 'f', -1, 64),
+		}
+		c = append(c, metric)
+	}
+	for NameMetric, ValueMetric := range m.CounterMetrics { // Порядок не определен
+		metric := metrics.Metric{
+			TypeMetric: "gauge",
+			NameMetric: NameMetric,
+			Value:      strconv.FormatInt(ValueMetric, 10),
+		}
+		c = append(c, metric)
+	}
+	return c, nil
+}
+
+func (m Metrics) GetValue(typeMetric string, NameMetric string) (metrics.Metric, error) {
+	switch typeMetric {
+	case "gauge":
+		if value, ok := m.GaugeMetrics[NameMetric]; ok == true {
+			ResultMetric := metrics.Metric{
+				TypeMetric: typeMetric,
+				NameMetric: NameMetric,
+				Value:      strconv.FormatFloat(value, 'f', -1, 64),
+			}
+			return ResultMetric, nil
+		}
+		return metrics.Metric{}, errors.New("unknown metric")
+	case "counter":
+		if value, ok := m.CounterMetrics[NameMetric]; ok == true {
+			ResultMetric := metrics.Metric{
+				TypeMetric: typeMetric,
+				NameMetric: NameMetric,
+				Value:      strconv.FormatInt(value, 10),
+			}
+			return ResultMetric, nil
+		}
+		return metrics.Metric{}, errors.New("unknown metric")
+	default:
+		return metrics.Metric{}, errors.New("Invalid type metric")
+	}
 }
 
 func (m Metrics) CollectMetrics() {
