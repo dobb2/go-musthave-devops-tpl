@@ -26,7 +26,7 @@ func (m Metrics) UpdateGauge(typeMetric string, value float64) {
 }
 
 func (m Metrics) UpdateCounter(typeMetric string, value int64) {
-	m.CounterMetrics[typeMetric] = value
+	m.CounterMetrics[typeMetric] += value
 }
 
 func (m Metrics) GetAllMetrics() ([]metrics.Metric, error) {
