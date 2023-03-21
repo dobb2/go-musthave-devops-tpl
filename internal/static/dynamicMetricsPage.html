@@ -1,0 +1,20 @@
+{{define "metrics"}}
+<!doctype html>
+<html lang="ru" class="h-100">
+<head>
+    <title>Title</title>
+</head>
+<body class="d-flex flex-column h-100">
+<table class="table">
+    <th>Metric</th>
+    <th>Value</th>
+    {{range .}}
+    <tr>
+        <td>{{.NameMetric}}</td>
+        <td>{{.Value}}</td>
+    </tr>
+    {{end}}
+</table>
+</body>
+</html>
+{{end}}
