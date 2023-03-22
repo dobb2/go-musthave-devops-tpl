@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
-	"github.com/dobb2/go-musthave-devops-tpl/internal/entities"
+	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics/cache"
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"
@@ -181,7 +181,7 @@ func TestMetricsHandler_GetAllMetrics(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			a := New(cache.Create())
-			var metric entities.Metrics
+			var metric metrics.Metrics
 
 			if err := json.NewDecoder(strings.NewReader(tt.json)).Decode(&metric); err == nil {
 				switch metric.MType {
@@ -272,7 +272,7 @@ func TestMetricsHandler_GetMetric(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			a := New(cache.Create())
-			var metric entities.Metrics
+			var metric metrics.Metrics
 
 			if err := json.NewDecoder(strings.NewReader(tt.json)).Decode(&metric); err == nil && tt.added {
 				switch metric.MType {
