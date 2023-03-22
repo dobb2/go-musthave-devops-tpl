@@ -20,8 +20,16 @@ func main() {
 	r.Use(middleware.Recoverer)
 
 	r.Get("/", handler.GetAllMetrics)
-	r.Post("/update/", handler.UpdateMetric)
-	r.Post("/value/", handler.GetMetric)
+
+	r.Route("/update", func(r chi.Router) {
+		r.Post("/{typeMetric}/{nameMetric}/{value}", handler.UpdateMetric)
+		r.Post("/", handler.PostUpdateMetric)
+	})
+
+	r.Route("/value", func(r chi.Router) {
+		r.Get("/{typeMetric}/{nameMetric}", handler.GetMetric)
+		r.Post("/", handler.PostGetMetric)
+	})
 
 	log.Fatal(http.ListenAndServe(":8080", r))
 }

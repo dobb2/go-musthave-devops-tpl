@@ -28,7 +28,7 @@ func testRequest(t *testing.T, ts *httptest.Server, path, method string, body io
 	return resp.StatusCode, string(respBody)
 }
 
-func TestMetricsHandler_UpdateMetric(t *testing.T) {
+func TestMetricsHandler_PostUpdateMetric(t *testing.T) {
 	type want struct {
 		code int
 	}
@@ -127,7 +127,7 @@ func TestMetricsHandler_UpdateMetric(t *testing.T) {
 
 			r := func(m MetricsHandler) chi.Router {
 				r := chi.NewRouter()
-				r.Post("/update/", m.UpdateMetric)
+				r.Post("/update/", m.PostUpdateMetric)
 				return r
 			}(a)
 			ts := httptest.NewServer(r)
@@ -206,7 +206,7 @@ func TestMetricsHandler_GetAllMetrics(t *testing.T) {
 	}
 }
 
-func TestMetricsHandler_GetMetric(t *testing.T) {
+func TestMetricsHandler_PostGetMetric(t *testing.T) {
 	type want struct {
 		code int
 	}
@@ -285,13 +285,113 @@ func TestMetricsHandler_GetMetric(t *testing.T) {
 
 			r := func(m MetricsHandler) chi.Router {
 				r := chi.NewRouter()
-				r.Post("/value/", a.GetMetric)
+				r.Post("/value/", a.PostGetMetric)
 				return r
 			}(a)
 			ts := httptest.NewServer(r)
 			defer ts.Close()
 
 			statusCode, _ := testRequest(t, ts, tt.url, tt.method, strings.NewReader(tt.json))
+			assert.Equal(t, tt.want.code, statusCode)
+		})
+	}
+}
+
+func TestMetricsHandler_UpdateMetric(t *testing.T) {
+	type want struct {
+		code int
+	}
+	tests := []struct {
+		name   string
+		url    string
+		method string
+		want   want
+	}{
+		{
+			name:   "positive gauge test #1",
+			url:    "/update/gauge/HeapInuse/933888.43",
+			method: "POST",
+			want: want{
+				code: http.StatusOK,
+			},
+		},
+		{
+			name:   "negative gauge test #2",
+			url:    "/update/gauge/HeapInuse/933888.43",
+			method: "GET",
+			want: want{
+				code: http.StatusMethodNotAllowed,
+			},
+		},
+		{
+			name:   "negative gauge test #3",
+			url:    "/update/gauge/HeapInuse/933888fdfd",
+			method: "POST",
+			want: want{
+				code: http.StatusBadRequest,
+			},
+		},
+		{
+			name:   "negative gauge test #4",
+			url:    "/update/gauge/HeapInuse/",
+			method: "POST",
+			want: want{
+				code: http.StatusNotFound,
+			},
+		},
+		{
+			name:   "positive counter test #1",
+			url:    "/update/counter/PollCount/13",
+			method: "POST",
+			want: want{
+				code: http.StatusOK,
+			},
+		},
+		{
+			name:   "negative counter test #2",
+			url:    "/update/counter/PollCount/13",
+			method: "GET",
+			want: want{
+				code: http.StatusMethodNotAllowed,
+			},
+		},
+		{
+			name:   "negative counter test #3",
+			url:    "/update/counter/PollCount/13cd",
+			method: "POST",
+			want: want{
+				code: http.StatusBadRequest,
+			},
+		},
+		{
+			name:   "negative counter test #4",
+			url:    "/update/counter/PollCount/13.33",
+			method: "POST",
+			want: want{
+				code: http.StatusBadRequest,
+			},
+		},
+		{
+			name:   "negative counter test #5",
+			url:    "/update/counter/PollCount/",
+			method: "POST",
+			want: want{
+				code: http.StatusNotFound,
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			a := New(cache.Create())
+			r := func(m MetricsHandler) chi.Router {
+				r := chi.NewRouter()
+				r.Post("/update/{typeMetric}/{nameMetric}/{value}", m.UpdateMetric)
+				return r
+			}(a)
+			ts := httptest.NewServer(r)
+			defer ts.Close()
+
+			statusCode, _ := testRequest(t, ts, tt.url, tt.method, nil)
 			assert.Equal(t, tt.want.code, statusCode)
 		})
 	}

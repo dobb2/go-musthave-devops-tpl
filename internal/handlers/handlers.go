@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/storage"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics"
+	"github.com/go-chi/chi/v5"
 	"html/template"
 	"net/http"
 	"path/filepath"
+	"strconv"
 )
 
 type MetricsHandler struct {
@@ -26,7 +28,6 @@ func (m MetricsHandler) GetAllMetrics(w http.ResponseWriter, r *http.Request) {
 	}
 
 	main := filepath.Join("..", "..", "internal", "static", "dynamicMetricsPage.html")
-
 	tmpl, err := template.ParseFiles(main)
 	if err != nil {
 		http.Error(w, "", http.StatusBadRequest)
@@ -40,8 +41,8 @@ func (m MetricsHandler) GetAllMetrics(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (m MetricsHandler) UpdateMetric(w http.ResponseWriter, r *http.Request) {
-	var metric metrics.Metrics // целевой объект
+func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request) {
+	var metric metrics.Metrics
 
 	if err := json.NewDecoder(r.Body).Decode(&metric); err != nil {
 		http.Error(w, "invalid json", http.StatusBadRequest)
@@ -71,7 +72,7 @@ func (m MetricsHandler) UpdateMetric(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (m MetricsHandler) GetMetric(w http.ResponseWriter, r *http.Request) {
+func (m MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
 	var metric metrics.Metrics
 
 	if err := json.NewDecoder(r.Body).Decode(&metric); err != nil {
@@ -80,6 +81,50 @@ func (m MetricsHandler) GetMetric(w http.ResponseWriter, r *http.Request) {
 	}
 
 	strValue, err := m.storage.GetValue(metric.MType, metric.ID)
+	if err != nil {
+		http.Error(w, "Not found metric", http.StatusNotFound)
+		return
+	} else {
+		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintln(w, strValue.Value)
+	}
+}
+
+func (m MetricsHandler) UpdateMetric(w http.ResponseWriter, r *http.Request) {
+	valueStr := chi.URLParam(r, "value")
+	nameMetric := chi.URLParam(r, "nameMetric")
+	fmt.Println(valueStr)
+	fmt.Println(nameMetric)
+
+	switch TypeMetric := chi.URLParam(r, "typeMetric"); TypeMetric {
+	case "gauge":
+		if value, err := strconv.ParseFloat(valueStr, 64); err == nil {
+			m.storage.UpdateGauge(nameMetric, value)
+			w.WriteHeader(http.StatusOK)
+		} else {
+			http.Error(w, "The value does not match the type!", http.StatusBadRequest)
+			return
+		}
+	case "counter":
+		if value, err := strconv.ParseInt(valueStr, 10, 64); err == nil {
+			m.storage.UpdateCounter(nameMetric, value)
+			w.WriteHeader(http.StatusOK)
+		} else {
+			http.Error(w, "The value does not match the type!", http.StatusBadRequest)
+			return
+		}
+	default:
+		http.Error(w, "Invalid type metric", http.StatusNotImplemented)
+		return
+	}
+}
+
+func (m MetricsHandler) GetMetric(w http.ResponseWriter, r *http.Request) {
+	typeMetric := chi.URLParam(r, "typeMetric")
+	nameMetric := chi.URLParam(r, "nameMetric")
+
+	strValue, err := m.storage.GetValue(typeMetric, nameMetric)
 	if err != nil {
 		http.Error(w, "Not found metric", http.StatusNotFound)
 		return
