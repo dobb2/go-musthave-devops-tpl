@@ -74,21 +74,25 @@ func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request)
 
 func (m MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
 	var metric metrics.Metrics
-
 	if err := json.NewDecoder(r.Body).Decode(&metric); err != nil {
 		http.Error(w, "invalid json", http.StatusBadRequest)
 		return
 	}
 
-	strValue, err := m.storage.GetValue(metric.MType, metric.ID)
+	metric, err := m.storage.GetValue(metric.MType, metric.ID)
 	if err != nil {
 		http.Error(w, "Not found metric", http.StatusNotFound)
 		return
-	} else {
-		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprintln(w, strValue.Value)
 	}
+
+	out, err := json.Marshal(metric)
+	if err != nil {
+		http.Error(w, "problem marshal metric to json", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(out)
 }
 
 func (m MetricsHandler) UpdateMetric(w http.ResponseWriter, r *http.Request) {
