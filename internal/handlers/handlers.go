@@ -131,6 +131,11 @@ func (m MetricsHandler) GetMetric(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintln(w, strValue.Value)
+		switch typeMetric {
+		case "counter":
+			fmt.Fprintln(w, *strValue.Delta)
+		case "gauge":
+			fmt.Fprintln(w, *strValue.Value)
+		}
 	}
 }
