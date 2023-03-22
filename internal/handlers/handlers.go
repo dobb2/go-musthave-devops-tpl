@@ -1,13 +1,13 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/dobb2/go-musthave-devops-tpl/internal/entities"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/storage"
-	"github.com/go-chi/chi/v5"
 	"html/template"
 	"net/http"
 	"path/filepath"
-	"strconv"
 )
 
 type MetricsHandler struct {
@@ -38,25 +38,28 @@ func (m MetricsHandler) GetAllMetrics(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "", http.StatusBadRequest)
 		return
 	}
-
 }
 
 func (m MetricsHandler) UpdateMetric(w http.ResponseWriter, r *http.Request) {
-	valueStr := chi.URLParam(r, "value")
-	nameMetric := chi.URLParam(r, "nameMetric")
+	var metric entities.Metrics // целевой объект
 
-	switch TypeMetric := chi.URLParam(r, "typeMetric"); TypeMetric {
+	if err := json.NewDecoder(r.Body).Decode(&metric); err != nil {
+		http.Error(w, "invalid json", http.StatusBadRequest)
+		return
+	}
+
+	switch TypeMetric := metric.MType; TypeMetric {
 	case "gauge":
-		if value, err := strconv.ParseFloat(valueStr, 64); err == nil {
-			m.storage.UpdateGauge(nameMetric, value)
+		if value := metric.Value; value != nil {
+			m.storage.UpdateGauge(metric.ID, *value)
 			w.WriteHeader(http.StatusOK)
 		} else {
-			http.Error(w, "The value does not match the type!", http.StatusBadRequest)
+			http.Error(w, "the value does not match the type!", http.StatusBadRequest)
 			return
 		}
 	case "counter":
-		if value, err := strconv.ParseInt(valueStr, 10, 64); err == nil {
-			m.storage.UpdateCounter(nameMetric, value)
+		if delta := metric.Delta; delta != nil {
+			m.storage.UpdateCounter(metric.ID, *delta)
 			w.WriteHeader(http.StatusOK)
 		} else {
 			http.Error(w, "The value does not match the type!", http.StatusBadRequest)
@@ -69,10 +72,14 @@ func (m MetricsHandler) UpdateMetric(w http.ResponseWriter, r *http.Request) {
 }
 
 func (m MetricsHandler) GetMetric(w http.ResponseWriter, r *http.Request) {
-	typeMetric := chi.URLParam(r, "typeMetric")
-	nameMetric := chi.URLParam(r, "nameMetric")
+	var metric entities.Metrics
 
-	strValue, err := m.storage.GetValue(typeMetric, nameMetric)
+	if err := json.NewDecoder(r.Body).Decode(&metric); err != nil {
+		http.Error(w, "invalid json", http.StatusBadRequest)
+		return
+	}
+
+	strValue, err := m.storage.GetValue(metric.MType, metric.ID)
 	if err != nil {
 		http.Error(w, "Not found metric", http.StatusNotFound)
 		return
