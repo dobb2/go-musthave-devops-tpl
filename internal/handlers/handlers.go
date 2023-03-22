@@ -3,8 +3,8 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/dobb2/go-musthave-devops-tpl/internal/entities"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/storage"
+	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics"
 	"html/template"
 	"net/http"
 	"path/filepath"
@@ -41,7 +41,7 @@ func (m MetricsHandler) GetAllMetrics(w http.ResponseWriter, r *http.Request) {
 }
 
 func (m MetricsHandler) UpdateMetric(w http.ResponseWriter, r *http.Request) {
-	var metric entities.Metrics // целевой объект
+	var metric metrics.Metrics // целевой объект
 
 	if err := json.NewDecoder(r.Body).Decode(&metric); err != nil {
 		http.Error(w, "invalid json", http.StatusBadRequest)
@@ -72,7 +72,7 @@ func (m MetricsHandler) UpdateMetric(w http.ResponseWriter, r *http.Request) {
 }
 
 func (m MetricsHandler) GetMetric(w http.ResponseWriter, r *http.Request) {
-	var metric entities.Metrics
+	var metric metrics.Metrics
 
 	if err := json.NewDecoder(r.Body).Decode(&metric); err != nil {
 		http.Error(w, "invalid json", http.StatusBadRequest)

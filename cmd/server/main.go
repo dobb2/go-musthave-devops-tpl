@@ -20,8 +20,8 @@ func main() {
 	r.Use(middleware.Recoverer)
 
 	r.Get("/", handler.GetAllMetrics)
-	r.Post("/update/{typeMetric}/{nameMetric}/{value}", handler.UpdateMetric)
-	r.Get("/value/{typeMetric}/{nameMetric}", handler.GetMetric)
+	r.Post("/update/", handler.UpdateMetric)
+	r.Post("/value/", handler.GetMetric)
 
 	log.Fatal(http.ListenAndServe(":8080", r))
 }

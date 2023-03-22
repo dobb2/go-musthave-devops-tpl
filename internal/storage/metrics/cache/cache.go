@@ -5,81 +5,84 @@ import (
 	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics"
 	"math/rand"
 	"runtime"
-	"strconv"
 	"time"
 )
 
 type Metrics struct {
-	GaugeMetrics   map[string]float64
-	CounterMetrics map[string]int64
+	Metrics map[string]metrics.Metrics
 }
 
 func Create() Metrics {
 	return Metrics{
-		GaugeMetrics:   map[string]float64{},
-		CounterMetrics: map[string]int64{},
+		Metrics: map[string]metrics.Metrics{},
 	}
 }
 
-func (m Metrics) UpdateGauge(typeMetric string, value float64) {
-	m.GaugeMetrics[typeMetric] = value
+func (m Metrics) UpdateGauge(nameMetric string, value float64) {
+	Value := value
+	metric := metrics.Metrics{
+		ID:    nameMetric,
+		MType: "gauge",
+		Value: &Value,
+	}
+	m.Metrics[nameMetric] = metric
 }
 
-func (m Metrics) UpdateCounter(typeMetric string, value int64) {
-	m.CounterMetrics[typeMetric] += value
+func (m Metrics) UpdateCounter(nameMetric string, value int64) {
+	Delta := value
+	_, ok := m.Metrics[nameMetric]
+	if ok {
+		Delta += *m.Metrics[nameMetric].Delta
+	}
+	metric := metrics.Metrics{
+		ID:    nameMetric,
+		MType: "counter",
+		Delta: &Delta,
+	}
+	m.Metrics[nameMetric] = metric
 }
 
-func (m Metrics) GetAllMetrics() ([]metrics.Metric, error) {
-	countMetrics := len(m.GaugeMetrics) + len(m.CounterMetrics)
-	c := make([]metrics.Metric, 0, countMetrics)
+func (m Metrics) GetAllMetrics() ([]metrics.Metrics, error) {
+	countMetrics := len(m.Metrics)
+	c := make([]metrics.Metrics, 0, countMetrics)
 
 	if countMetrics == 0 {
 		return c, errors.New("no metrics")
 	}
 
-	for NameMetric, ValueMetric := range m.GaugeMetrics { // Порядок не определен
-		metric := metrics.Metric{
-			TypeMetric: "gauge",
-			NameMetric: NameMetric,
-			Value:      strconv.FormatFloat(ValueMetric, 'f', -1, 64),
-		}
-		c = append(c, metric)
+	for _, Metric := range m.Metrics {
+		c = append(c, Metric)
 	}
-	for NameMetric, ValueMetric := range m.CounterMetrics { // Порядок не определен
-		metric := metrics.Metric{
-			TypeMetric: "gauge",
-			NameMetric: NameMetric,
-			Value:      strconv.FormatInt(ValueMetric, 10),
-		}
-		c = append(c, metric)
-	}
+
 	return c, nil
 }
 
-func (m Metrics) GetValue(typeMetric string, NameMetric string) (metrics.Metric, error) {
+func (m Metrics) GetValue(typeMetric string, NameMetric string) (metrics.Metrics, error) {
 	switch typeMetric {
 	case "gauge":
-		if value, ok := m.GaugeMetrics[NameMetric]; ok {
-			ResultMetric := metrics.Metric{
-				TypeMetric: typeMetric,
-				NameMetric: NameMetric,
-				Value:      strconv.FormatFloat(value, 'f', -1, 64),
+		if metric, ok := m.Metrics[NameMetric]; ok {
+			Value := *metric.Value
+			ResultMetric := metrics.Metrics{
+				ID:    NameMetric,
+				MType: typeMetric,
+				Value: &Value,
 			}
 			return ResultMetric, nil
 		}
-		return metrics.Metric{}, errors.New("unknown metric")
+		return metrics.Metrics{}, errors.New("unknown metric")
 	case "counter":
-		if value, ok := m.CounterMetrics[NameMetric]; ok {
-			ResultMetric := metrics.Metric{
-				TypeMetric: typeMetric,
-				NameMetric: NameMetric,
-				Value:      strconv.FormatInt(value, 10),
+		if metric, ok := m.Metrics[NameMetric]; ok {
+			Delta := *metric.Delta
+			ResultMetric := metrics.Metrics{
+				ID:    NameMetric,
+				MType: typeMetric,
+				Delta: &Delta,
 			}
 			return ResultMetric, nil
 		}
-		return metrics.Metric{}, errors.New("unknown metric")
+		return metrics.Metrics{}, errors.New("unknown metric")
 	default:
-		return metrics.Metric{}, errors.New("invalid type metric")
+		return metrics.Metrics{}, errors.New("invalid type metric")
 	}
 }
 
@@ -120,6 +123,6 @@ func (m Metrics) CollectMetrics() {
 	m.UpdateGauge("StackSys", float64(rtm.StackSys))
 	m.UpdateGauge("Sys", float64(rtm.Sys))
 	m.UpdateGauge("TotalAlloc", float64(rtm.TotalAlloc))
-	m.CounterMetrics["PollCount"]++
+	m.UpdateCounter("PollCount", 1)
 	m.UpdateGauge("RandomValue", float64(rand.Float64()))
 }

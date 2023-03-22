@@ -10,8 +10,12 @@
     <th>Value</th>
     {{range .}}
     <tr>
-        <td>{{.NameMetric}}</td>
-        <td>{{.Value}}</td>
+        <td>{{.ID}}</td>
+        {{if .Delta}}
+            <td>{{.Delta}}</td>
+        {{else}}
+            <td>{{.Value}}</td>
+        {{end}}
     </tr>
     {{end}}
 </table>
