@@ -1,6 +1,8 @@
 package main
 
 import (
+	"github.com/caarlos0/env/v7"
+	"github.com/dobb2/go-musthave-devops-tpl/internal/config"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/handlers"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics/cache"
 	"github.com/go-chi/chi/v5"
@@ -10,6 +12,12 @@ import (
 )
 
 func main() {
+	var cfg config.Config
+	err := env.Parse(&cfg)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	r := chi.NewRouter()
 	datastore := cache.Create()
 	handler := handlers.New(datastore)
@@ -31,5 +39,5 @@ func main() {
 		r.Post("/", handler.PostGetMetric)
 	})
 
-	log.Fatal(http.ListenAndServe(":8080", r))
+	log.Fatal(http.ListenAndServe(cfg.Address, r))
 }
