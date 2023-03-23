@@ -3,6 +3,7 @@ package client
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/dobb2/go-musthave-devops-tpl/internal/config"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics/cache"
 	"github.com/go-resty/resty/v2"
@@ -10,9 +11,9 @@ import (
 	"time"
 )
 
-func SendMetric(metric metrics.Metrics) {
+func SendMetric(metric metrics.Metrics, cfg config.Config) {
 	client := resty.New().
-		SetBaseURL("http://127.0.0.1:8080/").
+		SetBaseURL("http://" + cfg.Address).
 		SetRetryCount(2).
 		SetRetryWaitTime(1 * time.Second)
 
@@ -33,8 +34,8 @@ func SendMetric(metric metrics.Metrics) {
 	fmt.Println(resp.StatusCode())
 }
 
-func PutMetric(m *cache.Metrics) {
+func PutMetric(m *cache.Metrics, cfg config.Config) {
 	for _, Metric := range m.Metrics { // Порядок не определен
-		SendMetric(Metric)
+		SendMetric(Metric, cfg)
 	}
 }
