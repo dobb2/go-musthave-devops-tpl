@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/caarlos0/env/v7"
+	"github.com/dobb2/go-musthave-devops-tpl/internal/backup"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/config"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/handlers"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics/cache"
@@ -9,6 +10,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"log"
 	"net/http"
+	"time"
 )
 
 func main() {
@@ -20,6 +22,39 @@ func main() {
 
 	r := chi.NewRouter()
 	datastore := cache.Create()
+
+	if cfg.StoreFile != "" {
+		backup := backup.New(datastore)
+		if cfg.Restore {
+			backup.Restore(cfg)
+		}
+
+		c := make(chan struct{})
+
+		if cfg.StoreInterval == 0 {
+			datastore.AddChannel(&c)
+		} else {
+			go func(c chan struct{}, duration time.Duration) {
+				ticker := time.NewTicker(duration)
+				for {
+					select {
+					case <-ticker.C:
+						c <- struct{}{}
+					}
+				}
+			}(c, cfg.StoreInterval)
+		}
+
+		go func(ch chan struct{}) {
+			for {
+				select {
+				case <-c:
+					backup.UpdateBackup(cfg)
+				}
+			}
+		}(c)
+	}
+
 	handler := handlers.New(datastore)
 
 	r.Use(middleware.RequestID)
