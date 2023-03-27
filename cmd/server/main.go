@@ -36,15 +36,25 @@ func main() {
 		} else {
 			go func(c chan struct{}, duration time.Duration) {
 				ticker := time.NewTicker(duration)
-				for _ = range ticker.C {
-					c <- struct{}{}
+				for {
+					select {
+					case <-ticker.C:
+						{
+							c <- struct{}{}
+						}
+					}
 				}
 			}(c, cfg.StoreInterval)
 		}
 
 		go func(ch chan struct{}) {
-			for _ = range c {
-				backup.UpdateBackup(cfg)
+			for {
+				select {
+				case <-ch:
+					{
+						backup.UpdateBackup(cfg)
+					}
+				}
 			}
 		}(c)
 	}
