@@ -98,8 +98,6 @@ func (m MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
 func (m MetricsHandler) UpdateMetric(w http.ResponseWriter, r *http.Request) {
 	valueStr := chi.URLParam(r, "value")
 	nameMetric := chi.URLParam(r, "nameMetric")
-	fmt.Println(valueStr)
-	fmt.Println(nameMetric)
 
 	switch TypeMetric := chi.URLParam(r, "typeMetric"); TypeMetric {
 	case "gauge":

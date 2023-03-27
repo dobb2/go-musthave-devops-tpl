@@ -9,13 +9,26 @@ import (
 )
 
 type Metrics struct {
-	Metrics map[string]metrics.Metrics
+	Metrics map[string]metrics.Metrics `json:"metrics"`
+	сhan    *chan struct{}
 }
 
 func Create() Metrics {
 	return Metrics{
 		Metrics: map[string]metrics.Metrics{},
+		сhan:    nil,
 	}
+}
+
+// загрузить в сторадж
+func (m Metrics) UploadMetrics(metrics []metrics.Metrics) {
+	for _, metric := range metrics {
+		m.Metrics[metric.ID] = metric
+	}
+}
+
+func (m *Metrics) AddChannel(c *chan struct{}) {
+	m.сhan = c
 }
 
 func (m Metrics) UpdateGauge(nameMetric string, value float64) {
@@ -26,6 +39,9 @@ func (m Metrics) UpdateGauge(nameMetric string, value float64) {
 		Value: &Value,
 	}
 	m.Metrics[nameMetric] = metric
+	if m.сhan != nil {
+		*m.сhan <- struct{}{}
+	}
 }
 
 func (m Metrics) UpdateCounter(nameMetric string, value int64) {
@@ -40,6 +56,9 @@ func (m Metrics) UpdateCounter(nameMetric string, value int64) {
 		Delta: &Delta,
 	}
 	m.Metrics[nameMetric] = metric
+	if m.сhan != nil {
+		*m.сhan <- struct{}{}
+	}
 }
 
 func (m Metrics) GetAllMetrics() ([]metrics.Metrics, error) {

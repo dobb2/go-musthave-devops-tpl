@@ -10,3 +10,8 @@ type MetricCreatorUpdater interface {
 	GetValue(typeMetric string, NameMetric string) (metrics.Metrics, error)
 	GetAllMetrics() ([]metrics.Metrics, error)
 }
+
+type MetricsBackuper interface {
+	GetAllMetrics() ([]metrics.Metrics, error)
+	UploadMetrics([]metrics.Metrics)
+}
