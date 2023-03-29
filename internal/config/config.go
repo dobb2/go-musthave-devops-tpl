@@ -6,7 +6,6 @@ import (
 	"github.com/caarlos0/env/v7"
 	"log"
 	"os"
-	"strconv"
 	"time"
 )
 
@@ -116,16 +115,8 @@ func CreateServerConfig() ServerConfig {
 
 	str, bool = os.LookupEnv("RESTORE")
 	fmt.Println("Env parametr restore " + str)
-	if bool {
-		valBool, err := strconv.ParseBool(str)
-		if err == nil {
-			conf.Restore = valBool
-			flag.BoolVar(&conf.Restore, "r", valBool, "a bool")
-		} else {
-			log.Println(err)
-			flag.BoolVar(&conf.Restore, "r", envcfg.Restore, "a bool")
-		}
-	} else {
+	fmt.Println(envcfg.Restore)
+	if !bool {
 		flag.BoolVar(&conf.Restore, "r", envcfg.Restore, "a bool")
 	}
 	flag.Parse()
