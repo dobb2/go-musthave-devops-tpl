@@ -2,7 +2,6 @@ package client
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/config"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics/cache"
@@ -11,7 +10,7 @@ import (
 	"time"
 )
 
-func SendMetric(metric metrics.Metrics, cfg config.AgentConfig) {
+func SendMetric(metric metrics.Metrics, cfg config.EnvConfig) {
 	client := resty.New().
 		SetBaseURL("http://" + cfg.Address).
 		SetRetryCount(2).
@@ -31,10 +30,10 @@ func SendMetric(metric metrics.Metrics, cfg config.AgentConfig) {
 		log.Panic(err)
 	}
 
-	fmt.Println(resp.StatusCode())
+	log.Println(resp.StatusCode())
 }
 
-func PutMetric(m *cache.Metrics, cfg config.AgentConfig) {
+func PutMetric(m *cache.Metrics, cfg config.EnvConfig) {
 	for _, Metric := range m.Metrics { // Порядок не определен
 		SendMetric(Metric, cfg)
 	}
