@@ -117,10 +117,10 @@ func CreateServerConfig() ServerConfig {
 	if bool {
 		valBool, err := strconv.ParseBool(str)
 		if err == nil {
-			flag.BoolVar(&conf.Restore, "r", valBool, "a boll")
+			flag.BoolVar(&conf.Restore, "r", valBool, "a bool")
 		} else {
 			log.Println(err)
-			flag.BoolVar(&conf.Restore, "r", envcfg.Restore, "a boll")
+			flag.BoolVar(&conf.Restore, "r", envcfg.Restore, "a bool")
 		}
 	} else {
 		flag.BoolVar(&conf.Restore, "r", envcfg.Restore, "a bool")
