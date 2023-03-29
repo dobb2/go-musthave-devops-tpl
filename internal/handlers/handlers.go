@@ -54,6 +54,7 @@ func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request)
 	case "gauge":
 		if value := metric.Value; value != nil {
 			m.storage.UpdateGauge(metric.ID, *value)
+			log.Println("Added" + metric.ID + " " + metric.MType)
 			w.WriteHeader(http.StatusOK)
 		} else {
 			http.Error(w, "the value does not match the type!", http.StatusBadRequest)
@@ -61,6 +62,7 @@ func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request)
 		}
 	case "counter":
 		if delta := metric.Delta; delta != nil {
+			log.Println("Added" + metric.ID + " " + metric.MType)
 			m.storage.UpdateCounter(metric.ID, *delta)
 			w.WriteHeader(http.StatusOK)
 		} else {
