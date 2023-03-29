@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/backup"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/config"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/handlers"
@@ -14,7 +15,7 @@ import (
 
 func main() {
 	cfg := config.CreateServerConfig()
-	log.Println(cfg)
+	fmt.Println(cfg)
 	r := chi.NewRouter()
 	datastore := cache.Create()
 
