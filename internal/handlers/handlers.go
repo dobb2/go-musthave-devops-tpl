@@ -102,6 +102,7 @@ func (m MetricsHandler) UpdateMetric(w http.ResponseWriter, r *http.Request) {
 	switch TypeMetric := chi.URLParam(r, "typeMetric"); TypeMetric {
 	case "gauge":
 		if value, err := strconv.ParseFloat(valueStr, 64); err == nil {
+			fmt.Println(value)
 			m.storage.UpdateGauge(nameMetric, value)
 			w.WriteHeader(http.StatusOK)
 		} else {
