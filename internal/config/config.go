@@ -112,10 +112,10 @@ func CreateServerConfig() ServerConfig {
 	str, bool = os.LookupEnv("STORE_INTERVAL")
 	fmt.Println("env store interval " + str)
 	fmt.Println(envcfg.StoreInterval)
-	if !bool {
-		flag.DurationVar(&conf.StoreInterval, "i", envcfg.StoreInterval, "a duration")
-	} else {
+	if bool {
 		conf.StoreInterval = envcfg.StoreInterval
+		flag.DurationVar(&conf.StoreInterval, "i", 300, "a duration")
+	} else {
 		flag.DurationVar(&conf.StoreInterval, "i", envcfg.StoreInterval, "a duration")
 	}
 	flag.Parse()
