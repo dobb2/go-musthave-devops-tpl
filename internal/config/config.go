@@ -59,6 +59,7 @@ func CreateAgentConfig() AgentConfig {
 			flag.DurationVar(&conf.ReportInterval, "r", valRep, "a durations")
 		} else {
 			log.Println(err)
+			log.Println("this problem 11")
 			flag.DurationVar(&conf.ReportInterval, "r", envcfg.ReportInterval, "a duration")
 		}
 	} else {
