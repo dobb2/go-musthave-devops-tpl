@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/caarlos0/env/v7"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/backup"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/config"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/handlers"
@@ -14,11 +13,7 @@ import (
 )
 
 func main() {
-	var cfg config.Config
-	err := env.Parse(&cfg)
-	if err != nil {
-		log.Fatal(err)
-	}
+	cfg := config.CreateServerConfig()
 	r := chi.NewRouter()
 	datastore := cache.Create()
 
