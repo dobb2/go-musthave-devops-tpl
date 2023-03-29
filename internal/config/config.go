@@ -114,7 +114,7 @@ func CreateServerConfig() ServerConfig {
 	fmt.Println(envcfg.StoreInterval)
 	if bool {
 		conf.StoreInterval = envcfg.StoreInterval
-		flag.DurationVar(&conf.StoreInterval, "i", 300, "a duration")
+		flag.DurationVar(&envcfg.StoreInterval, "i", 300, "a duration")
 	} else {
 		flag.DurationVar(&conf.StoreInterval, "i", envcfg.StoreInterval, "a duration")
 	}
