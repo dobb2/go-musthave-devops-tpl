@@ -60,7 +60,6 @@ func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request)
 		}
 	case "counter":
 		if delta := metric.Delta; delta != nil {
-			log.Println("Added" + metric.ID + " " + metric.MType)
 			m.storage.UpdateCounter(metric.ID, *delta)
 			w.WriteHeader(http.StatusOK)
 		} else {
@@ -83,7 +82,7 @@ func (m MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
 	metricSend, err := m.storage.GetValue(metricGet.MType, metricGet.ID)
 	if err != nil && metricGet.ID != "" {
 		http.Error(w, "not found metric", http.StatusNotFound)
-		log.Println("ID " + metricGet.ID + " typet" + metricGet.MType)
+		log.Println("ID " + metricGet.ID + " type" + metricGet.MType)
 		log.Println(metricSend)
 		return
 	}
