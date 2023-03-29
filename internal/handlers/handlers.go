@@ -81,7 +81,7 @@ func (m MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
 	}
 
 	metric, err := m.storage.GetValue(metric.MType, metric.ID)
-	if err != nil && metric.ID != "" {
+	if err != nil {
 		http.Error(w, "not found metric", http.StatusNotFound)
 		return
 	}
