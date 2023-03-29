@@ -59,7 +59,6 @@ func CreateAgentConfig() AgentConfig {
 			flag.DurationVar(&conf.ReportInterval, "r", valRep, "a durations")
 		} else {
 			log.Println(err)
-			log.Println("this problem 11")
 			flag.DurationVar(&conf.ReportInterval, "r", envcfg.ReportInterval, "a duration")
 		}
 	} else {
@@ -120,6 +119,7 @@ func CreateServerConfig() ServerConfig {
 		flag.BoolVar(&conf.Restore, "r", envcfg.Restore, "a bool")
 	} else {
 		conf.Restore = envcfg.Restore
+		flag.BoolVar(&envcfg.Restore, "r", true, "a bool")
 	}
 	flag.Parse()
 
