@@ -74,19 +74,19 @@ func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request)
 }
 
 func (m MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
-	var metric metrics.Metrics
-	if err := json.NewDecoder(r.Body).Decode(&metric); err != nil {
+	var metricGet metrics.Metrics
+	if err := json.NewDecoder(r.Body).Decode(&metricGet); err != nil {
 		http.Error(w, "invalid json", http.StatusBadRequest)
 		return
 	}
 
-	metric, err := m.storage.GetValue(metric.MType, metric.ID)
-	if err != nil && metric.MType != "" {
+	metricSend, err := m.storage.GetValue(metricGet.MType, metricGet.ID)
+	if err != nil && metricGet.ID != "" {
 		http.Error(w, "not found metric", http.StatusNotFound)
 		return
 	}
 
-	out, err := json.Marshal(metric)
+	out, err := json.Marshal(metricSend)
 	if err != nil {
 		http.Error(w, "problem marshal metric to json", http.StatusInternalServerError)
 		return
@@ -103,7 +103,6 @@ func (m MetricsHandler) UpdateMetric(w http.ResponseWriter, r *http.Request) {
 	switch TypeMetric := chi.URLParam(r, "typeMetric"); TypeMetric {
 	case "gauge":
 		if value, err := strconv.ParseFloat(valueStr, 64); err == nil {
-			fmt.Println(value)
 			m.storage.UpdateGauge(nameMetric, value)
 			w.WriteHeader(http.StatusOK)
 		} else {
