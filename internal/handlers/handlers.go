@@ -44,7 +44,6 @@ func (m MetricsHandler) GetAllMetrics(w http.ResponseWriter, r *http.Request) {
 
 func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request) {
 	var metric metrics.Metrics
-
 	if err := json.NewDecoder(r.Body).Decode(&metric); err != nil {
 		http.Error(w, "invalid json", http.StatusBadRequest)
 		return
@@ -54,8 +53,6 @@ func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request)
 	case "gauge":
 		if value := metric.Value; value != nil {
 			m.storage.UpdateGauge(metric.ID, *value)
-			log.Println(r.Body)
-			log.Println("Added " + metric.ID + " " + metric.MType)
 			w.WriteHeader(http.StatusOK)
 		} else {
 			http.Error(w, "the value does not match the type!", http.StatusBadRequest)
@@ -84,9 +81,7 @@ func (m MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
 	}
 
 	metric, err := m.storage.GetValue(metric.MType, metric.ID)
-	if err != nil {
-		log.Println(r.Body)
-		log.Println("Not found metric " + metric.ID + " type " + metric.MType)
+	if err != nil && metric.MType != "" {
 		http.Error(w, "not found metric", http.StatusNotFound)
 		return
 	}
