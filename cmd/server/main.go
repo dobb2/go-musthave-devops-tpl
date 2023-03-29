@@ -14,6 +14,7 @@ import (
 
 func main() {
 	cfg := config.CreateServerConfig()
+	log.Println(cfg)
 	r := chi.NewRouter()
 	datastore := cache.Create()
 
