@@ -54,7 +54,8 @@ func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request)
 	case "gauge":
 		if value := metric.Value; value != nil {
 			m.storage.UpdateGauge(metric.ID, *value)
-			log.Println("Added" + metric.ID + " " + metric.MType)
+			log.Println(r.Body)
+			log.Println("Added " + metric.ID + " " + metric.MType)
 			w.WriteHeader(http.StatusOK)
 		} else {
 			http.Error(w, "the value does not match the type!", http.StatusBadRequest)
@@ -84,8 +85,9 @@ func (m MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
 
 	metric, err := m.storage.GetValue(metric.MType, metric.ID)
 	if err != nil {
-		log.Println("Not found metric" + metric.ID + ".err" + err.Error())
-		http.Error(w, "Not found metric"+metric.ID+".err"+err.Error(), http.StatusNotFound)
+		log.Println(r.Body)
+		log.Println("Not found metric " + metric.ID + " type " + metric.MType)
+		http.Error(w, "not found metric", http.StatusNotFound)
 		return
 	}
 
