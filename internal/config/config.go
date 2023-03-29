@@ -118,7 +118,10 @@ func CreateServerConfig() ServerConfig {
 	fmt.Println(envcfg.Restore)
 	if !bool {
 		flag.BoolVar(&conf.Restore, "r", envcfg.Restore, "a bool")
+	} else {
+		conf.Restore = envcfg.Restore
 	}
 	flag.Parse()
+
 	return conf
 }
