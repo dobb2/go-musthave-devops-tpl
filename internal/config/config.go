@@ -92,19 +92,6 @@ func CreateServerConfig() ServerConfig {
 		flag.StringVar(&conf.Address, "a", envcfg.Address, "a string")
 	}
 
-	str, bool = os.LookupEnv("STORE_INTERVAL")
-	if bool {
-		val, err := time.ParseDuration(str)
-		if err == nil {
-			flag.DurationVar(&conf.StoreInterval, "i", val, "a durations")
-		} else {
-			log.Println(err)
-			flag.DurationVar(&conf.StoreInterval, "i", envcfg.StoreInterval, "a duration")
-		}
-	} else {
-		flag.DurationVar(&conf.StoreInterval, "i", envcfg.StoreInterval, "a duration")
-	}
-
 	str, bool = os.LookupEnv("STORE_FILE")
 	if bool {
 		flag.StringVar(&conf.StoreFile, "f", str, "a string")
@@ -120,6 +107,16 @@ func CreateServerConfig() ServerConfig {
 	} else {
 		conf.Restore = envcfg.Restore
 		flag.BoolVar(&envcfg.Restore, "r", true, "a bool")
+	}
+
+	str, bool = os.LookupEnv("STORE_INTERVAL")
+	fmt.Println("env store interval " + str)
+	fmt.Println(envcfg.StoreInterval)
+	if !bool {
+		flag.DurationVar(&conf.StoreInterval, "i", envcfg.StoreInterval, "a duration")
+	} else {
+		conf.StoreInterval = envcfg.StoreInterval
+		flag.DurationVar(&conf.StoreInterval, "i", envcfg.StoreInterval, "a duration")
 	}
 	flag.Parse()
 
