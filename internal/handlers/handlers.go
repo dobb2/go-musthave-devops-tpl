@@ -7,6 +7,7 @@ import (
 	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics"
 	"github.com/go-chi/chi/v5"
 	"html/template"
+	"log"
 	"net/http"
 	"path/filepath"
 	"strconv"
@@ -81,7 +82,7 @@ func (m MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
 
 	metric, err := m.storage.GetValue(metric.MType, metric.ID)
 	if err != nil {
-		w.Write([]byte("Not found metric" + metric.ID + ".err" + err.Error()))
+		log.Println("Not found metric" + metric.ID + ".err" + err.Error())
 		http.Error(w, "Not found metric"+metric.ID+".err"+err.Error(), http.StatusNotFound)
 		return
 	}
