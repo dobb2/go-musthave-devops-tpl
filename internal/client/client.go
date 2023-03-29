@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func SendMetric(metric metrics.Metrics, cfg config.AgentConfig) {
+func SendMetric(metric metrics.Metrics, cfg config.Config) {
 	client := resty.New().
 		SetBaseURL("http://" + cfg.Address).
 		SetRetryCount(2).
@@ -34,7 +34,7 @@ func SendMetric(metric metrics.Metrics, cfg config.AgentConfig) {
 	fmt.Println(resp.StatusCode())
 }
 
-func PutMetric(m *cache.Metrics, cfg config.AgentConfig) {
+func PutMetric(m *cache.Metrics, cfg config.Config) {
 	for _, Metric := range m.Metrics { // Порядок не определен
 		SendMetric(Metric, cfg)
 	}
