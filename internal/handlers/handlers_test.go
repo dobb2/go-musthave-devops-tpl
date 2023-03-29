@@ -235,7 +235,7 @@ func TestMetricsHandler_PostGetMetric(t *testing.T) {
 			json:   `{}`,
 			method: "POST",
 			want: want{
-				code: http.StatusOK,
+				code: http.StatusNotFound,
 			},
 		},
 		{

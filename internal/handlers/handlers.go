@@ -7,7 +7,6 @@ import (
 	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics"
 	"github.com/go-chi/chi/v5"
 	"html/template"
-	"log"
 	"net/http"
 	"path/filepath"
 	"strconv"
@@ -53,8 +52,6 @@ func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request)
 	case "gauge":
 		if value := metric.Value; value != nil {
 			m.storage.UpdateGauge(metric.ID, *value)
-			strVal := fmt.Sprintf("%f", *value)
-			log.Println("name " + metric.ID + " type " + metric.MType + " value " + strVal)
 			w.WriteHeader(http.StatusOK)
 		} else {
 			http.Error(w, "the value does not match the type!", http.StatusBadRequest)
@@ -63,8 +60,6 @@ func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request)
 	case "counter":
 		if delta := metric.Delta; delta != nil {
 			m.storage.UpdateCounter(metric.ID, *delta)
-			strVal := strconv.FormatInt(*delta, 10)
-			log.Println("name " + metric.ID + " type " + metric.MType + " value " + strVal)
 			w.WriteHeader(http.StatusOK)
 		} else {
 			http.Error(w, "The value does not match the type!", http.StatusBadRequest)
@@ -84,10 +79,8 @@ func (m MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
 	}
 
 	metricSend, err := m.storage.GetValue(metricGet.MType, metricGet.ID)
-	if err != nil && metricGet.ID != "" {
+	if err != nil {
 		http.Error(w, "not found metric", http.StatusNotFound)
-		log.Println("ID " + metricGet.ID + " type " + metricGet.MType)
-		log.Println(metricSend)
 		return
 	}
 

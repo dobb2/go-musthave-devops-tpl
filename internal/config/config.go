@@ -2,10 +2,10 @@ package config
 
 import (
 	"flag"
-	"fmt"
 	"github.com/caarlos0/env/v7"
 	"log"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -32,40 +32,45 @@ func CreateAgentConfig() AgentConfig {
 	}
 
 	var conf AgentConfig
-	valAddr, boolAdrr := os.LookupEnv("ADDRESS")
-	if boolAdrr {
-		flag.StringVar(&conf.Address, "a", valAddr, "a string")
-	} else {
-		flag.StringVar(&conf.Address, "a", envcfg.Address, "a string")
-	}
 
-	strPol, boolPol := os.LookupEnv("POLL_INTERVAL")
-	if boolPol {
-		valPol, err := time.ParseDuration(strPol)
-		if err == nil {
-			flag.DurationVar(&conf.PollInterval, "p", valPol, "a durations")
-		} else {
-			log.Println(err)
-			flag.DurationVar(&conf.PollInterval, "p", envcfg.PollInterval, "a duration")
-		}
-	} else {
-		flag.DurationVar(&conf.PollInterval, "p", envcfg.PollInterval, "a duration")
-	}
-
-	strRep, boolRep := os.LookupEnv("REPORT_INTERVAL")
-	if boolRep {
-		valRep, err := time.ParseDuration(strRep)
-		if err == nil {
-			flag.DurationVar(&conf.ReportInterval, "r", valRep, "a durations")
-		} else {
-			log.Println(err)
-			flag.DurationVar(&conf.ReportInterval, "r", envcfg.ReportInterval, "a duration")
-		}
-	} else {
-		flag.DurationVar(&conf.ReportInterval, "r", envcfg.ReportInterval, "a duration")
-	}
-
+	flagStrAddr := flag.String("a", envcfg.Address, "a string")
+	flagStrPollInterval := flag.Duration("p", envcfg.PollInterval, "a duration")
+	flagStrReportInterval := flag.Duration("r", envcfg.ReportInterval, "a duration")
 	flag.Parse()
+
+	envStrAddres, bool := os.LookupEnv("ADDRESS")
+	if bool {
+		conf.Address = envStrAddres
+	} else {
+		conf.Address = *flagStrAddr
+	}
+
+	envStrPollInterval, bool := os.LookupEnv("POLL_INTERVAL")
+	if bool {
+		envTimePollInterval, err := time.ParseDuration(envStrPollInterval)
+		if err != nil {
+			conf.PollInterval = envcfg.PollInterval
+			log.Println("incorrect time value restore in env export")
+		} else {
+			conf.PollInterval = envTimePollInterval
+		}
+	} else {
+		conf.PollInterval = *flagStrPollInterval
+	}
+
+	envStrReportInterval, bool := os.LookupEnv("REPORT_INTERVAL")
+	if bool {
+		envTimeReportInterval, err := time.ParseDuration(envStrReportInterval)
+		if err != nil {
+			conf.ReportInterval = envcfg.ReportInterval
+			log.Println("incorrect time value restore in env export")
+		} else {
+			conf.PollInterval = envTimeReportInterval
+		}
+	} else {
+		conf.ReportInterval = *flagStrReportInterval
+	}
+
 	return conf
 }
 
@@ -85,40 +90,51 @@ func CreateServerConfig() ServerConfig {
 
 	var conf ServerConfig
 
-	str, bool := os.LookupEnv("ADDRESS")
-	if bool {
-		flag.StringVar(&conf.Address, "a", str, "a string")
-	} else {
-		flag.StringVar(&conf.Address, "a", envcfg.Address, "a string")
-	}
-
-	str, bool = os.LookupEnv("STORE_FILE")
-	if bool {
-		flag.StringVar(&conf.StoreFile, "f", str, "a string")
-	} else {
-		flag.StringVar(&conf.StoreFile, "f", envcfg.StoreFile, "a string")
-	}
-
-	str, bool = os.LookupEnv("RESTORE")
-	fmt.Println("Env parametr restore " + str)
-	fmt.Println(envcfg.Restore)
-	if !bool {
-		flag.BoolVar(&conf.Restore, "r", envcfg.Restore, "a bool")
-	} else {
-		conf.Restore = envcfg.Restore
-		flag.BoolVar(&envcfg.Restore, "r", true, "a bool")
-	}
-
-	str, bool = os.LookupEnv("STORE_INTERVAL")
-	fmt.Println("env store interval " + str)
-	fmt.Println(envcfg.StoreInterval)
-	if bool {
-		conf.StoreInterval = envcfg.StoreInterval
-		flag.DurationVar(&envcfg.StoreInterval, "i", 300, "a duration")
-	} else {
-		flag.DurationVar(&conf.StoreInterval, "i", envcfg.StoreInterval, "a duration")
-	}
+	flagStrAddr := flag.String("a", envcfg.Address, "a string")
+	flagStrFile := flag.String("f", envcfg.StoreFile, "a string")
+	flagStrRestore := flag.Bool("r", envcfg.Restore, "a bool")
+	flagStrStoreInterval := flag.Duration("i", envcfg.StoreInterval, "a duration")
 	flag.Parse()
+
+	envStrAddres, bool := os.LookupEnv("ADDRESS")
+	if bool {
+		conf.Address = envStrAddres
+	} else {
+		conf.Address = *flagStrAddr
+	}
+
+	evnStrFile, bool := os.LookupEnv("STORE_FILE")
+	if bool {
+		conf.StoreFile = evnStrFile
+	} else {
+		conf.StoreFile = *flagStrFile
+	}
+
+	envStrRestore, bool := os.LookupEnv("RESTORE")
+	if bool {
+		envBoolRestore, err := strconv.ParseBool(envStrRestore)
+		if err != nil {
+			conf.Restore = envcfg.Restore
+			log.Println("incorrect bool value restore in env export")
+		} else {
+			conf.Restore = envBoolRestore
+		}
+	} else {
+		conf.Restore = *flagStrRestore
+	}
+
+	envStrStoreInterval, bool := os.LookupEnv("STORE_INTERVAL")
+	if bool {
+		envTimeStoreInterval, err := time.ParseDuration(envStrStoreInterval)
+		if err != nil {
+			conf.StoreInterval = envcfg.StoreInterval
+			log.Println("incorrect time value restore in env export")
+		} else {
+			conf.StoreInterval = envTimeStoreInterval
+		}
+	} else {
+		conf.StoreInterval = *flagStrStoreInterval
+	}
 
 	return conf
 }
