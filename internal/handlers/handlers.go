@@ -22,6 +22,7 @@ func New(metrics storage.MetricCreatorUpdater) MetricsHandler {
 
 func (m MetricsHandler) GetAllMetrics(w http.ResponseWriter, r *http.Request) {
 	metrics, err := m.storage.GetAllMetrics()
+	w.Header().Set("Content-Type", "html/text")
 
 	if err != nil {
 		http.Error(w, "No metrics", http.StatusBadRequest)
@@ -34,7 +35,6 @@ func (m MetricsHandler) GetAllMetrics(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "", http.StatusBadRequest)
 		return
 	}
-	w.Header().Set("Content-Type", "text/html")
 	err = tmpl.ExecuteTemplate(w, "metrics", metrics)
 	if err != nil {
 		http.Error(w, "", http.StatusBadRequest)
