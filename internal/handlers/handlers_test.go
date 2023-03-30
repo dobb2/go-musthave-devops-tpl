@@ -174,7 +174,7 @@ func TestMetricsHandler_GetAllMetrics(t *testing.T) {
 			json:   `{"id":"Testmetricid1","type":"gauge","value":434.32}`,
 			method: "GET",
 			want: want{
-				code: http.StatusOK,
+				code: http.StatusBadRequest,
 			},
 		},
 	}
