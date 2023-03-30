@@ -18,7 +18,7 @@ func New(metrics storage.MetricsBackuper) MetricsBackuper {
 	return MetricsBackuper{storage: metrics}
 }
 
-func (b MetricsBackuper) Restore(cfg config.ServerConfig) {
+func (b MetricsBackuper) Restore(cfg config.EnvConfig) {
 	jsonFile, err := os.OpenFile(cfg.StoreFile, os.O_CREATE|os.O_RDONLY, 0777)
 	if err != nil {
 		log.Println(err)
@@ -37,7 +37,7 @@ func (b MetricsBackuper) Restore(cfg config.ServerConfig) {
 	log.Println("old metrics download to storage")
 }
 
-func (b MetricsBackuper) UpdateBackup(cfg config.ServerConfig) {
+func (b MetricsBackuper) UpdateBackup(cfg config.EnvConfig) {
 	metrics, err := b.storage.GetAllMetrics()
 	if err != nil {
 		log.Println(err)
