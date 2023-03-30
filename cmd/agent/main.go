@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	var cfg config.EnvConfig
+	var cfg config.AgentConfig
 	err := env.Parse(&cfg)
 	if err != nil {
 		log.Fatal(err)
