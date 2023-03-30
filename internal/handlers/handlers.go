@@ -9,7 +9,6 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	"os"
 	"path/filepath"
 	"strconv"
 )
@@ -31,32 +30,7 @@ func (m MetricsHandler) GetAllMetrics(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	main := filepath.Join("..", "..", "internal", "static", "dynamicMetricsPage.html")
-	log.Println(main)
-	path, _ := os.Getwd()
-	log.Println(path)
-
-	// Открываем текущую директорию
-	dir, err := os.Open(".")
-	if err != nil {
-		log.Println(err)
-		http.Error(w, "No metrics", http.StatusBadRequest)
-		return
-	}
-	defer dir.Close()
-
-	// Получаем список файлов и папок
-	files, err := dir.Readdir(-1)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, "No metrics", http.StatusBadRequest)
-		return
-	}
-
-	// Выводим имена файлов и папок
-	for _, file := range files {
-		log.Println(file.Name())
-	}
+	main := filepath.Join("internal", "static", "dynamicMetricsPage.html")
 
 	tmpl, err := template.ParseFiles(main)
 	if err != nil {
