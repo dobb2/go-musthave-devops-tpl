@@ -1,18 +1,15 @@
 package handlers
 
 import (
-	"compress/gzip"
 	"encoding/json"
 	"fmt"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/storage"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics"
 	"github.com/go-chi/chi/v5"
 	"html/template"
-	"io"
 	"net/http"
 	"path/filepath"
 	"strconv"
-	"strings"
 )
 
 type MetricsHandler struct {
@@ -23,37 +20,9 @@ func New(metrics storage.MetricCreatorUpdater) MetricsHandler {
 	return MetricsHandler{storage: metrics}
 }
 
-type gzipWriter struct {
-	http.ResponseWriter
-	Writer io.Writer
-}
-
-func (w gzipWriter) Write(b []byte) (int, error) {
-	// w.Writer будет отвечать за gzip-сжатие, поэтому пишем в него
-	return w.Writer.Write(b)
-}
-
-func (m MetricsHandler) GzipHandle(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if !strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
-			next.ServeHTTP(w, r)
-			return
-		}
-
-		gz, err := gzip.NewWriterLevel(w, gzip.BestSpeed)
-		if err != nil {
-			io.WriteString(w, err.Error())
-			return
-		}
-		defer gz.Close()
-
-		w.Header().Set("Content-Encoding", "gzip")
-		next.ServeHTTP(gzipWriter{ResponseWriter: w, Writer: gz}, r)
-	})
-}
-
 func (m MetricsHandler) GetAllMetrics(w http.ResponseWriter, r *http.Request) {
 	metrics, err := m.storage.GetAllMetrics()
+	w.Header().Set("Content-Type", "text/plain")
 	if err != nil {
 		http.Error(w, "No metrics", http.StatusBadRequest)
 		return
@@ -84,6 +53,7 @@ func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request)
 	case "gauge":
 		if value := metric.Value; value != nil {
 			m.storage.UpdateGauge(metric.ID, *value)
+			w.Header().Set("Content-Type", "text/plain")
 			w.WriteHeader(http.StatusOK)
 		} else {
 			http.Error(w, "the value does not match the type!", http.StatusBadRequest)
@@ -92,6 +62,7 @@ func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request)
 	case "counter":
 		if delta := metric.Delta; delta != nil {
 			m.storage.UpdateCounter(metric.ID, *delta)
+			w.Header().Set("Content-Type", "text/plain")
 			w.WriteHeader(http.StatusOK)
 		} else {
 			http.Error(w, "The value does not match the type!", http.StatusBadRequest)
@@ -134,6 +105,7 @@ func (m MetricsHandler) UpdateMetric(w http.ResponseWriter, r *http.Request) {
 	case "gauge":
 		if value, err := strconv.ParseFloat(valueStr, 64); err == nil {
 			m.storage.UpdateGauge(nameMetric, value)
+			w.Header().Set("Content-Type", "text/plain")
 			w.WriteHeader(http.StatusOK)
 		} else {
 			http.Error(w, "The value does not match the type!", http.StatusBadRequest)
@@ -142,6 +114,7 @@ func (m MetricsHandler) UpdateMetric(w http.ResponseWriter, r *http.Request) {
 	case "counter":
 		if value, err := strconv.ParseInt(valueStr, 10, 64); err == nil {
 			m.storage.UpdateCounter(nameMetric, value)
+			w.Header().Set("Content-Type", "text/plain")
 			w.WriteHeader(http.StatusOK)
 		} else {
 			http.Error(w, "The value does not match the type!", http.StatusBadRequest)
