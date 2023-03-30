@@ -7,6 +7,7 @@ import (
 	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics"
 	"github.com/go-chi/chi/v5"
 	"html/template"
+	"log"
 	"net/http"
 	"path/filepath"
 	"strconv"
@@ -25,6 +26,7 @@ func (m MetricsHandler) GetAllMetrics(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "html/text")
 
 	if err != nil {
+		log.Println("No metrics")
 		http.Error(w, "No metrics", http.StatusBadRequest)
 		return
 	}
@@ -32,11 +34,13 @@ func (m MetricsHandler) GetAllMetrics(w http.ResponseWriter, r *http.Request) {
 	main := filepath.Join("..", "..", "internal", "static", "dynamicMetricsPage.html")
 	tmpl, err := template.ParseFiles(main)
 	if err != nil {
+		log.Println("error parse template")
 		http.Error(w, "", http.StatusBadRequest)
 		return
 	}
 	err = tmpl.ExecuteTemplate(w, "metrics", metrics)
 	if err != nil {
+		log.Println("error executeTemplate")
 		http.Error(w, "", http.StatusBadRequest)
 		return
 	}
