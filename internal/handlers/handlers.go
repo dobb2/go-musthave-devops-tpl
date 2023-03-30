@@ -22,9 +22,8 @@ func New(metrics storage.MetricCreatorUpdater) MetricsHandler {
 
 func (m MetricsHandler) GetAllMetrics(w http.ResponseWriter, r *http.Request) {
 	metrics, err := m.storage.GetAllMetrics()
-	w.Header().Set("Content-Type", "text/html")
+
 	if err != nil {
-		w.Header().Set("Content-Type", "text/plain")
 		http.Error(w, "No metrics", http.StatusBadRequest)
 		return
 	}
@@ -32,17 +31,16 @@ func (m MetricsHandler) GetAllMetrics(w http.ResponseWriter, r *http.Request) {
 	main := filepath.Join("..", "..", "internal", "static", "dynamicMetricsPage.html")
 	tmpl, err := template.ParseFiles(main)
 	if err != nil {
-		w.Header().Set("Content-Type", "text/plain")
+		http.Error(w, "", http.StatusBadRequest)
+		return
+	}
+	w.Header().Set("Content-Type", "text/html")
+	err = tmpl.ExecuteTemplate(w, "metrics", metrics)
+	if err != nil {
 		http.Error(w, "", http.StatusBadRequest)
 		return
 	}
 
-	err = tmpl.ExecuteTemplate(w, "metrics", metrics)
-	if err != nil {
-		w.Header().Set("Content-Type", "text/plain")
-		http.Error(w, "", http.StatusBadRequest)
-		return
-	}
 }
 
 func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request) {
