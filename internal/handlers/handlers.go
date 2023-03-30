@@ -26,12 +26,13 @@ func (m MetricsHandler) GetAllMetrics(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "html/text")
 
 	if err != nil {
-		log.Println("No metrics")
 		http.Error(w, "No metrics", http.StatusBadRequest)
 		return
 	}
 
 	main := filepath.Join("..", "..", "internal", "static", "dynamicMetricsPage.html")
+	log.Println(main)
+
 	tmpl, err := template.ParseFiles(main)
 	if err != nil {
 		log.Println("error parse template")
