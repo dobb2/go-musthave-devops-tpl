@@ -9,6 +9,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strconv"
 )
@@ -32,6 +33,8 @@ func (m MetricsHandler) GetAllMetrics(w http.ResponseWriter, r *http.Request) {
 
 	main := filepath.Join("..", "..", "internal", "static", "dynamicMetricsPage.html")
 	log.Println(main)
+	path, _ := os.Getwd()
+	log.Println(path)
 
 	tmpl, err := template.ParseFiles(main)
 	if err != nil {
