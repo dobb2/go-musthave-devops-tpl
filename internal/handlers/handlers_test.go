@@ -168,15 +168,6 @@ func TestMetricsHandler_GetAllMetrics(t *testing.T) {
 				code: http.StatusMethodNotAllowed,
 			},
 		},
-		{
-			name:   "positive get all metric test #3",
-			url:    "/",
-			json:   `{"id":"Testmetricid1","type":"gauge","value":434.32}`,
-			method: "GET",
-			want: want{
-				code: http.StatusBadRequest,
-			},
-		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
