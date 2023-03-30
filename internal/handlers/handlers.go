@@ -40,6 +40,7 @@ func (m MetricsHandler) GetAllMetrics(w http.ResponseWriter, r *http.Request) {
 	dir, err := os.Open(".")
 	if err != nil {
 		log.Println(err)
+		http.Error(w, "No metrics", http.StatusBadRequest)
 		return
 	}
 	defer dir.Close()
@@ -48,6 +49,7 @@ func (m MetricsHandler) GetAllMetrics(w http.ResponseWriter, r *http.Request) {
 	files, err := dir.Readdir(-1)
 	if err != nil {
 		log.Println(err)
+		http.Error(w, "No metrics", http.StatusBadRequest)
 		return
 	}
 
