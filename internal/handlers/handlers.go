@@ -77,18 +77,21 @@ func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request)
 func (m MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
 	var metricGet metrics.Metrics
 	if err := json.NewDecoder(r.Body).Decode(&metricGet); err != nil {
+		w.Header().Set("Content-Type", "text/plain")
 		http.Error(w, "invalid json", http.StatusBadRequest)
 		return
 	}
 
 	metricSend, err := m.storage.GetValue(metricGet.MType, metricGet.ID)
 	if err != nil {
+		w.Header().Set("Content-Type", "text/plain")
 		http.Error(w, "not found metric", http.StatusNotFound)
 		return
 	}
 
 	out, err := json.Marshal(metricSend)
 	if err != nil {
+		w.Header().Set("Content-Type", "text/plain")
 		http.Error(w, "problem marshal metric to json", http.StatusInternalServerError)
 		return
 	}
@@ -135,7 +138,7 @@ func (m MetricsHandler) GetMetric(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Not found metric", http.StatusNotFound)
 		return
 	} else {
-		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+		w.Header().Set("Content-Type", "text/plain")
 		w.WriteHeader(http.StatusOK)
 		switch typeMetric {
 		case "counter":

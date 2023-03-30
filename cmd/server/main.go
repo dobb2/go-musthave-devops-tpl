@@ -49,7 +49,7 @@ func main() {
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
-	r.Use(middleware.Compress(5, "gzip"))
+	r.Use(middleware.Compress(5))
 
 	r.Get("/", handler.GetAllMetrics)
 
