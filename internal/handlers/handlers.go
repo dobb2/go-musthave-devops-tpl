@@ -36,6 +36,26 @@ func (m MetricsHandler) GetAllMetrics(w http.ResponseWriter, r *http.Request) {
 	path, _ := os.Getwd()
 	log.Println(path)
 
+	// Открываем текущую директорию
+	dir, err := os.Open(".")
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer dir.Close()
+
+	// Получаем список файлов и папок
+	files, err := dir.Readdir(-1)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	// Выводим имена файлов и папок
+	for _, file := range files {
+		log.Println(file.Name())
+	}
+
 	tmpl, err := template.ParseFiles(main)
 	if err != nil {
 		log.Println("error parse template")
