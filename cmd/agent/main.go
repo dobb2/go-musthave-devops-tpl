@@ -1,24 +1,25 @@
 package main
 
 import (
+	"time"
+
 	"github.com/dobb2/go-musthave-devops-tpl/internal/client"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/config"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics/cache"
-	"time"
 )
 
 func main() {
 	cfg := config.CreateAgentConfig()
 	m := cache.Create()
 
-	ticker := time.NewTicker(cfg.PollInterval)
-	ticker2 := time.NewTicker(cfg.ReportInterval)
+	tickerCollector := time.NewTicker(cfg.PollInterval)
+	tickerSender := time.NewTicker(cfg.ReportInterval)
 
 	for {
 		select {
-		case <-ticker.C:
+		case <-tickerCollector.C:
 			m.CollectMetrics()
-		case <-ticker2.C:
+		case <-tickerSender.C:
 			client.PutMetric(&m, cfg)
 		}
 	}

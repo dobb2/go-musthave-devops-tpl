@@ -2,12 +2,13 @@ package backup
 
 import (
 	"encoding/json"
-	"github.com/dobb2/go-musthave-devops-tpl/internal/config"
-	"github.com/dobb2/go-musthave-devops-tpl/internal/storage"
-	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics"
 	"io"
 	"log"
 	"os"
+
+	"github.com/dobb2/go-musthave-devops-tpl/internal/config"
+	"github.com/dobb2/go-musthave-devops-tpl/internal/storage"
+	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics"
 )
 
 type MetricsBackuper struct {

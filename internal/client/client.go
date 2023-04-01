@@ -2,12 +2,13 @@ package client
 
 import (
 	"encoding/json"
+	"log"
+	"time"
+
 	"github.com/dobb2/go-musthave-devops-tpl/internal/config"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics/cache"
 	"github.com/go-resty/resty/v2"
-	"log"
-	"time"
 )
 
 func SendMetric(metric metrics.Metrics, cfg config.AgentConfig) {

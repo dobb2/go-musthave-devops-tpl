@@ -2,16 +2,17 @@ package handlers
 
 import (
 	"encoding/json"
-	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics"
-	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics/cache"
-	"github.com/go-chi/chi/v5"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics"
+	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics/cache"
+	"github.com/go-chi/chi/v5"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func testRequest(t *testing.T, ts *httptest.Server, path, method string, body io.Reader) (int, string) {

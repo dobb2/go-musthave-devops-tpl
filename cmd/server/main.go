@@ -1,15 +1,16 @@
 package main
 
 import (
+	"log"
+	"net/http"
+	"time"
+
 	"github.com/dobb2/go-musthave-devops-tpl/internal/backup"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/config"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/handlers"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics/cache"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"log"
-	"net/http"
-	"time"
 )
 
 func main() {

@@ -3,13 +3,14 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/dobb2/go-musthave-devops-tpl/internal/storage"
-	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics"
-	"github.com/go-chi/chi/v5"
 	"html/template"
 	"net/http"
 	"path/filepath"
 	"strconv"
+
+	"github.com/dobb2/go-musthave-devops-tpl/internal/storage"
+	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics"
+	"github.com/go-chi/chi/v5"
 )
 
 type MetricsHandler struct {
