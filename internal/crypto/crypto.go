@@ -3,6 +3,7 @@ package crypto
 import (
 	"crypto/hmac"
 	"crypto/sha256"
+	"fmt"
 )
 
 func Hash(message string, key string) string {
@@ -13,7 +14,7 @@ func Hash(message string, key string) string {
 	mac.Write([]byte(message))
 	dst := mac.Sum(nil)
 
-	return string(dst)
+	return fmt.Sprintf("%x", dst)
 }
 
 func ValidMAC(message, messageMAC, key string) bool {
