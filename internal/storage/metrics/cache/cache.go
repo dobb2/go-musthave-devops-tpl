@@ -21,7 +21,6 @@ func Create() Metrics {
 	}
 }
 
-// загрузить в сторадж
 func (m Metrics) UploadMetrics(metrics []metrics.Metrics) {
 	for _, metric := range metrics {
 		m.Metrics[metric.ID] = metric

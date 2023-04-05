@@ -13,6 +13,7 @@ import (
 type Config struct {
 	Address        string        `env:"ADDRESS" envDefault:"127.0.0.1:8080"`
 	StoreFile      string        `env:"STORE_FILE" envDefault:"tmp/devops-metrics-db.json"`
+	Key            string        `env:"KEY" envDefault:""`
 	ReportInterval time.Duration `env:"REPORT_INTERVAL" envDefault:"10s"`
 	PollInterval   time.Duration `env:"POLL_INTERVAL" envDefault:"2s"`
 	StoreInterval  time.Duration `env:"STORE_INTERVAL" envDefault:"300s"`
@@ -21,12 +22,14 @@ type Config struct {
 
 type AgentConfig struct {
 	Address        string
+	Key            string
 	ReportInterval time.Duration
 	PollInterval   time.Duration
 }
 
 type ServerConfig struct {
 	Address       string
+	Key           string
 	StoreFile     string
 	Restore       bool
 	StoreInterval time.Duration
@@ -44,12 +47,18 @@ func CreateAgentConfig() AgentConfig {
 	flag.StringVar(&cfg.Address, "a", envcfg.Address, "a string")
 	flag.DurationVar(&cfg.ReportInterval, "r", envcfg.ReportInterval, "a duration")
 	flag.DurationVar(&cfg.PollInterval, "p", envcfg.PollInterval, "a duration")
+	flag.StringVar(&cfg.Key, "k", envcfg.Key, "a string")
 
 	flag.Parse()
 
 	envStrAddres, boolAddres := os.LookupEnv("ADDRESS")
 	if boolAddres {
 		cfg.Address = envStrAddres
+	}
+
+	envStrKey, boolKey := os.LookupEnv("KEY")
+	if boolKey {
+		cfg.Key = envStrKey
 	}
 
 	envStrPoll, boolPoll := os.LookupEnv("POLL_INTERVAL")
@@ -86,6 +95,7 @@ func CreateServerConfig() ServerConfig {
 
 	flag.StringVar(&cfg.Address, "a", envcfg.Address, "a string")
 	flag.StringVar(&cfg.StoreFile, "f", envcfg.StoreFile, "file store a string")
+	flag.StringVar(&cfg.Key, "k", envcfg.Key, "a string")
 	flag.BoolVar(&cfg.Restore, "r", envcfg.Restore, "a bool")
 	flag.DurationVar(&cfg.StoreInterval, "i", envcfg.StoreInterval, "a duration")
 	flag.Parse()
@@ -93,6 +103,11 @@ func CreateServerConfig() ServerConfig {
 	envStrAddres, boolAddres := os.LookupEnv("ADDRESS")
 	if boolAddres {
 		cfg.Address = envStrAddres
+	}
+
+	envStrKey, boolKey := os.LookupEnv("KEY")
+	if boolKey {
+		cfg.Key = envStrKey
 	}
 
 	envStrFile, boolFile := os.LookupEnv("STORE_FILE")

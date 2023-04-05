@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/dobb2/go-musthave-devops-tpl/internal/crypto"
 	"html/template"
 	"net/http"
 	"path/filepath"
@@ -50,10 +51,15 @@ func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request)
 		http.Error(w, "invalid json", http.StatusBadRequest)
 		return
 	}
+	key := r.Context().Value("Key").(string)
 
 	switch TypeMetric := metric.MType; TypeMetric {
 	case "gauge":
 		if value := metric.Value; value != nil {
+			if crypto.ValidMAC(fmt.Sprintf("%s:gauge:%f", metric.ID, metric.Value), metric.Hash, key) {
+				http.Error(w, "obtained and computed hashes do not match", http.StatusBadRequest)
+				return
+			}
 			m.storage.UpdateGauge(metric.ID, *value)
 			w.Header().Set("Content-Type", "text/plain")
 			w.WriteHeader(http.StatusOK)
@@ -63,6 +69,10 @@ func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request)
 		}
 	case "counter":
 		if delta := metric.Delta; delta != nil {
+			if crypto.ValidMAC(fmt.Sprintf("%s:counter:%d", metric.ID, metric.Delta), metric.Hash, key) {
+				http.Error(w, "obtained and computed hashes do not match", http.StatusBadRequest)
+				return
+			}
 			m.storage.UpdateCounter(metric.ID, *delta)
 			w.Header().Set("Content-Type", "text/plain")
 			w.WriteHeader(http.StatusOK)
