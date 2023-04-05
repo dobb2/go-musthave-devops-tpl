@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"github.com/go-chi/chi/v5/middleware"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -128,6 +129,7 @@ func TestMetricsHandler_PostUpdateMetric(t *testing.T) {
 
 			r := func(m MetricsHandler) chi.Router {
 				r := chi.NewRouter()
+				r.Use(middleware.WithValue("Key", ""))
 				r.Post("/update/", m.PostUpdateMetric)
 				return r
 			}(a)
