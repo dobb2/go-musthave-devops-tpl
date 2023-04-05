@@ -43,7 +43,7 @@ func PutMetric(m *cache.Metrics, cfg config.AgentConfig) {
 		case "counter":
 			Metric.Hash = crypto.Hash(fmt.Sprintf("%s:counter:%d", Metric.ID, Metric.Delta), cfg.Key)
 		case "gauge":
-			Metric.Hash = crypto.Hash(fmt.Sprintf("%s:gauge:%f", Metric.ID, Metric.Value), cfg.Key)
+			Metric.Hash = crypto.Hash(fmt.Sprintf("%s:gauge:%f", Metric.ID, *Metric.Value), cfg.Key)
 		default:
 			log.Println("invalid type metric for create hash")
 		}

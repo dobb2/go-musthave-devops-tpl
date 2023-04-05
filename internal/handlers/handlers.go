@@ -56,7 +56,7 @@ func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request)
 	switch TypeMetric := metric.MType; TypeMetric {
 	case "gauge":
 		if value := metric.Value; value != nil {
-			if crypto.ValidMAC(fmt.Sprintf("%s:gauge:%f", metric.ID, metric.Value), metric.Hash, key) {
+			if crypto.ValidMAC(fmt.Sprintf("%s:gauge:%f", metric.ID, *metric.Value), metric.Hash, key) {
 				http.Error(w, "obtained and computed hashes do not match", http.StatusBadRequest)
 				return
 			}
