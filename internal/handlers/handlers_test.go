@@ -1,4 +1,3 @@
-/*
 package handlers
 
 import (
@@ -392,5 +391,3 @@ func TestMetricsHandler_UpdateMetric(t *testing.T) {
 		})
 	}
 }
-
- */

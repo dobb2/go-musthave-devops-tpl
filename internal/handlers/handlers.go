@@ -52,13 +52,8 @@ func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request)
 		http.Error(w, "invalid json", http.StatusBadRequest)
 		return
 	}
-	if metric.MType == "gauge" {
-		log.Println("value for update ", metric.ID, metric.MType, metric.Hash, *metric.Value)
-	} else {
-		log.Println("value for update ", metric.ID, metric.MType, metric.Hash, *metric.Delta)
-	}
-	key := r.Context().Value("Key").(string)
 
+	key := r.Context().Value("Key").(string)
 	switch TypeMetric := metric.MType; TypeMetric {
 	case "gauge":
 		if value := metric.Value; value != nil {
@@ -89,6 +84,11 @@ func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request)
 	default:
 		http.Error(w, "Invalid type metric", http.StatusNotImplemented)
 		return
+	}
+	if metric.MType == "gauge" {
+		log.Println("value for update ", metric.ID, metric.MType, metric.Hash, *metric.Value)
+	} else if metric.MType == "counter" {
+		log.Println("value for update ", metric.ID, metric.MType, metric.Hash, *metric.Delta)
 	}
 }
 
