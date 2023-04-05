@@ -17,6 +17,7 @@ func main() {
 	cfg := config.CreateServerConfig()
 	r := chi.NewRouter()
 	datastore := cache.Create()
+	log.Println("key ", cfg.Key)
 
 	if cfg.StoreFile != "" {
 		backup := backup.New(datastore)
