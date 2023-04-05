@@ -279,6 +279,7 @@ func TestMetricsHandler_PostGetMetric(t *testing.T) {
 
 			r := func(m MetricsHandler) chi.Router {
 				r := chi.NewRouter()
+				r.Use(middleware.WithValue("Key", ""))
 				r.Post("/value/", a.PostGetMetric)
 				return r
 			}(a)
