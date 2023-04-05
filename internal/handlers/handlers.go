@@ -71,8 +71,6 @@ func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request)
 	case "counter":
 		if delta := metric.Delta; delta != nil {
 			if !crypto.ValidMAC(fmt.Sprintf("%s:counter:%d", metric.ID, *metric.Delta), metric.Hash, key) {
-				log.Println(metric.Hash)
-				log.Println(crypto.Hash(fmt.Sprintf("%s:counter:%d", metric.ID, *metric.Delta), key))
 				http.Error(w, "obtained and computed hashes do not match", http.StatusBadRequest)
 				return
 			}
