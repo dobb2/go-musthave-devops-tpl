@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"time"
 
 	"github.com/dobb2/go-musthave-devops-tpl/internal/client"
@@ -11,6 +12,8 @@ import (
 func main() {
 	cfg := config.CreateAgentConfig()
 	m := cache.Create()
+	log.Println("key ", cfg.Key)
+	log.Println(cfg)
 
 	tickerCollector := time.NewTicker(cfg.PollInterval)
 	tickerSender := time.NewTicker(cfg.ReportInterval)

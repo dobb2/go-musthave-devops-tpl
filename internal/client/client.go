@@ -38,7 +38,6 @@ func SendMetric(metric metrics.Metrics, cfg config.AgentConfig) {
 
 func PutMetric(m *cache.Metrics, cfg config.AgentConfig) {
 	for _, Metric := range m.Metrics { // Порядок не определен
-
 		switch Metric.MType {
 		case "counter":
 			Metric.Hash = crypto.Hash(fmt.Sprintf("%s:counter:%d", Metric.ID, *Metric.Delta), cfg.Key)
