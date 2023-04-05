@@ -52,7 +52,11 @@ func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request)
 		http.Error(w, "invalid json", http.StatusBadRequest)
 		return
 	}
-	log.Println("value for update ", metric.ID, metric.MType, metric.Hash, *metric.Delta, *metric.Value)
+	if metric.MType == "gauge" {
+		log.Println("value for update ", metric.ID, metric.MType, metric.Hash, *metric.Value)
+	} else {
+		log.Println("value for update ", metric.ID, metric.MType, metric.Hash, *metric.Delta)
+	}
 	key := r.Context().Value("Key").(string)
 
 	switch TypeMetric := metric.MType; TypeMetric {
@@ -103,13 +107,15 @@ func (m MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "not found metric", http.StatusNotFound)
 		return
 	}
-	log.Println("get value ", metricSend.ID, metricSend.MType, metricSend.Hash, *metricSend.Delta, *metricSend.Value)
+
 	key := r.Context().Value("Key").(string)
 	switch metricSend.MType {
 	case "counter":
 		metricSend.Hash = crypto.Hash(fmt.Sprintf("%s:counter:%d", metricSend.ID, *metricSend.Delta), key)
+		log.Println("get value ", metricSend.ID, metricSend.MType, metricSend.Hash, *metricSend.Delta)
 	case "gauge":
 		metricSend.Hash = crypto.Hash(fmt.Sprintf("%s:gauge:%f", metricSend.ID, *metricSend.Value), key)
+		log.Println("get value ", metricSend.ID, metricSend.MType, metricSend.Hash, *metricSend.Value)
 	default:
 		log.Println("invalid type metric for create hash")
 	}
