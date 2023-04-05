@@ -58,11 +58,16 @@ func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request)
 	switch TypeMetric := metric.MType; TypeMetric {
 	case "gauge":
 		if value := metric.Value; value != nil {
+			log.Println("Hash is")
+			log.Println(crypto.Hash(fmt.Sprintf("%s:gauge:%f", metric.ID, *metric.Value), key))
+			log.Println(metric.Hash)
+
 			if crypto.ValidMAC(fmt.Sprintf("%s:gauge:%f", metric.ID, *metric.Value), metric.Hash, key) {
 				log.Println("this bad hash")
 				http.Error(w, "obtained and computed hashes do not match", http.StatusBadRequest)
 				return
 			}
+
 			m.storage.UpdateGauge(metric.ID, *value)
 			w.Header().Set("Content-Type", "text/plain")
 			w.WriteHeader(http.StatusOK)
@@ -72,6 +77,10 @@ func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request)
 		}
 	case "counter":
 		if delta := metric.Delta; delta != nil {
+			log.Println("Hash is")
+			log.Println(crypto.Hash(fmt.Sprintf("%s:counter:%d", metric.ID, *metric.Delta), key))
+			log.Println(metric.Hash)
+
 			if crypto.ValidMAC(fmt.Sprintf("%s:counter:%d", metric.ID, *metric.Delta), metric.Hash, key) {
 				log.Println("this bad hash")
 				http.Error(w, "obtained and computed hashes do not match", http.StatusBadRequest)
