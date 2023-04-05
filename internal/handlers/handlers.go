@@ -52,7 +52,7 @@ func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request)
 		http.Error(w, "invalid json", http.StatusBadRequest)
 		return
 	}
-	log.Println(r.Body)
+	log.Println(metric)
 	key := r.Context().Value("Key").(string)
 
 	switch TypeMetric := metric.MType; TypeMetric {
@@ -111,6 +111,7 @@ func (m MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
 	default:
 		log.Println("invalid type metric for create hash")
 	}
+
 	log.Println(metricSend)
 
 	out, err := json.Marshal(metricSend)
