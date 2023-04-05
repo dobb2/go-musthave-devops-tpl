@@ -97,12 +97,13 @@ func (m MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
 	}
 
 	metricSend, err := m.storage.GetValue(metricGet.MType, metricGet.ID)
-	log.Println("get value ", metricGet.ID, metricGet.MType, metricGet.Hash, *metricGet.Delta, *metricGet.Value)
+	log.Println("get value ", metricGet.ID, metricGet.MType, metricGet.Hash)
 	if err != nil {
 		w.Header().Set("Content-Type", "text/plain")
 		http.Error(w, "not found metric", http.StatusNotFound)
 		return
 	}
+	log.Println("get value ", metricSend.ID, metricSend.MType, metricSend.Hash, *metricSend.Delta, *metricSend.Value)
 	key := r.Context().Value("Key").(string)
 	switch metricSend.MType {
 	case "counter":
