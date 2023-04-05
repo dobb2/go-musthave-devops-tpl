@@ -20,7 +20,10 @@ func Hash(message string, key string) string {
 func ValidMAC(message, messageMAC, key string) bool {
 	mac := hmac.New(sha256.New, []byte(key))
 	mac.Write([]byte(message))
-	expectedMAC := mac.Sum(nil)
-
-	return hmac.Equal([]byte(messageMAC), expectedMAC)
+	expectedMAC := fmt.Sprintf("%x", mac.Sum(nil))
+	if messageMAC == expectedMAC {
+		return true
+	} else {
+		return false
+	}
 }
