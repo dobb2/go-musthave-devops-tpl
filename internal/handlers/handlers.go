@@ -53,6 +53,7 @@ func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request)
 		return
 	}
 	log.Println(metric)
+	log.Println("value for update ", metric.ID, metric.MType, metric.Hash)
 	key := r.Context().Value("Key").(string)
 
 	switch TypeMetric := metric.MType; TypeMetric {
@@ -97,6 +98,7 @@ func (m MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
 	}
 
 	metricSend, err := m.storage.GetValue(metricGet.MType, metricGet.ID)
+	log.Println(metricGet.ID, metricGet.MType, metricGet.Hash)
 	if err != nil {
 		w.Header().Set("Content-Type", "text/plain")
 		http.Error(w, "not found metric", http.StatusNotFound)
@@ -111,8 +113,6 @@ func (m MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
 	default:
 		log.Println("invalid type metric for create hash")
 	}
-
-	log.Println(metricSend)
 
 	out, err := json.Marshal(metricSend)
 	if err != nil {
