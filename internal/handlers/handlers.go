@@ -62,7 +62,7 @@ func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request)
 			log.Println(crypto.Hash(fmt.Sprintf("%s:gauge:%f", metric.ID, *metric.Value), key))
 			log.Println(metric.Hash)
 
-			if crypto.ValidMAC(fmt.Sprintf("%s:gauge:%f", metric.ID, *metric.Value), metric.Hash, key) {
+			if !crypto.ValidMAC(fmt.Sprintf("%s:gauge:%f", metric.ID, *metric.Value), metric.Hash, key) {
 				log.Println("this bad hash")
 				http.Error(w, "obtained and computed hashes do not match", http.StatusBadRequest)
 				return
@@ -81,7 +81,7 @@ func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request)
 			log.Println(crypto.Hash(fmt.Sprintf("%s:counter:%d", metric.ID, *metric.Delta), key))
 			log.Println(metric.Hash)
 
-			if crypto.ValidMAC(fmt.Sprintf("%s:counter:%d", metric.ID, *metric.Delta), metric.Hash, key) {
+			if !crypto.ValidMAC(fmt.Sprintf("%s:counter:%d", metric.ID, *metric.Delta), metric.Hash, key) {
 				log.Println("this bad hash")
 				http.Error(w, "obtained and computed hashes do not match", http.StatusBadRequest)
 				return
