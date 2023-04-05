@@ -18,6 +18,9 @@ func Hash(message string, key string) string {
 }
 
 func ValidMAC(message, messageMAC, key string) bool {
+	if key == "" && messageMAC == "" {
+		return true
+	}
 	mac := hmac.New(sha256.New, []byte(key))
 	mac.Write([]byte(message))
 	expectedMAC := fmt.Sprintf("%x", mac.Sum(nil))

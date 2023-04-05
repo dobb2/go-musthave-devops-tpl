@@ -43,13 +43,11 @@ func (m MetricsHandler) GetAllMetrics(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "", http.StatusBadRequest)
 		return
 	}
-
 }
 
 func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request) {
 	var metric metrics.Metrics
 	if err := json.NewDecoder(r.Body).Decode(&metric); err != nil {
-		log.Println("this")
 		http.Error(w, "invalid json", http.StatusBadRequest)
 		return
 	}
@@ -58,14 +56,9 @@ func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request)
 	switch TypeMetric := metric.MType; TypeMetric {
 	case "gauge":
 		if value := metric.Value; value != nil {
-			log.Println("Hash is")
-			log.Println(crypto.Hash(fmt.Sprintf("%s:gauge:%f", metric.ID, *metric.Value), key))
-			log.Println(metric.Hash)
-
 			if !crypto.ValidMAC(fmt.Sprintf("%s:gauge:%f", metric.ID, *metric.Value), metric.Hash, key) {
-				log.Println("this bad hash")
-				//http.Error(w, "obtained and computed hashes do not match", http.StatusBadRequest)
-				///return
+				http.Error(w, "obtained and computed hashes do not match", http.StatusBadRequest)
+				return
 			}
 
 			m.storage.UpdateGauge(metric.ID, *value)
@@ -77,32 +70,23 @@ func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request)
 		}
 	case "counter":
 		if delta := metric.Delta; delta != nil {
-			log.Println("Hash is")
-			log.Println(crypto.Hash(fmt.Sprintf("%s:counter:%d", metric.ID, *metric.Delta), key))
-			log.Println(metric.Hash)
-
 			if !crypto.ValidMAC(fmt.Sprintf("%s:counter:%d", metric.ID, *metric.Delta), metric.Hash, key) {
-				log.Println("this bad hash")
-				//http.Error(w, "obtained and computed hashes do not match", http.StatusBadRequest)
-				//return
+				log.Println(metric.Hash)
+				log.Println(crypto.Hash(fmt.Sprintf("%s:counter:%d", metric.ID, *metric.Delta), key))
+				http.Error(w, "obtained and computed hashes do not match", http.StatusBadRequest)
+				return
 			}
+
 			m.storage.UpdateCounter(metric.ID, *delta)
 			w.Header().Set("Content-Type", "text/plain")
 			w.WriteHeader(http.StatusOK)
 		} else {
-			log.Println("this bad hash")
 			http.Error(w, "The value does not match the type!", http.StatusBadRequest)
 			return
 		}
 	default:
 		http.Error(w, "Invalid type metric", http.StatusNotImplemented)
 		return
-	}
-
-	if metric.MType == "gauge" {
-		log.Println("value for update ", metric.ID, metric.MType, metric.Hash, *metric.Value)
-	} else if metric.MType == "counter" {
-		log.Println("value for update ", metric.ID, metric.MType, metric.Hash, *metric.Delta)
 	}
 }
 
@@ -115,7 +99,6 @@ func (m MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
 	}
 
 	metricSend, err := m.storage.GetValue(metricGet.MType, metricGet.ID)
-	log.Println("get value ", metricGet.ID, metricGet.MType, "hash ", metricGet.Hash)
 	if err != nil {
 		w.Header().Set("Content-Type", "text/plain")
 		http.Error(w, "not found metric", http.StatusNotFound)
@@ -126,10 +109,8 @@ func (m MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
 	switch metricSend.MType {
 	case "counter":
 		metricSend.Hash = crypto.Hash(fmt.Sprintf("%s:counter:%d", metricSend.ID, *metricSend.Delta), key)
-		log.Println("get value ", metricSend.ID, metricSend.MType, metricSend.Hash, *metricSend.Delta)
 	case "gauge":
 		metricSend.Hash = crypto.Hash(fmt.Sprintf("%s:gauge:%f", metricSend.ID, *metricSend.Value), key)
-		log.Println("get value ", metricSend.ID, metricSend.MType, metricSend.Hash, *metricSend.Value)
 	default:
 		log.Println("invalid type metric for create hash")
 	}
@@ -140,7 +121,6 @@ func (m MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "problem marshal metric to json", http.StatusInternalServerError)
 		return
 	}
-	log.Println(string(out))
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(out)

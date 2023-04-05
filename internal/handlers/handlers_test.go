@@ -44,7 +44,7 @@ func TestMetricsHandler_PostUpdateMetric(t *testing.T) {
 		{
 			name:   "positive update test #1",
 			url:    "/update/",
-			json:   `{"id":"HeapInuse","type":"gauge","value":933888.43}`,
+			json:   `{"id":"HeapInuse","type":"gauge","value":933888.43, "hash":""}`,
 			method: "POST",
 			want: want{
 				code: http.StatusOK,
@@ -53,7 +53,7 @@ func TestMetricsHandler_PostUpdateMetric(t *testing.T) {
 		{
 			name:   "negative update test #2",
 			url:    "/update/",
-			json:   `{"id":"HeapInuse","type":"gauge","value":933888.43}`,
+			json:   `{"id":"HeapInuse","type":"gauge","value":933888.43, "hash":""}`,
 			method: "GET",
 			want: want{
 				code: http.StatusMethodNotAllowed,
@@ -62,7 +62,7 @@ func TestMetricsHandler_PostUpdateMetric(t *testing.T) {
 		{
 			name:   "negative update test #3",
 			url:    "/update/",
-			json:   `{"id":"HeapInuse","type":"gauge","value":933888fdfd}`,
+			json:   `{"id":"HeapInuse","type":"gauge","value":933888fdfd, "hash":""}`,
 			method: "POST",
 			want: want{
 				code: http.StatusBadRequest,
@@ -80,7 +80,7 @@ func TestMetricsHandler_PostUpdateMetric(t *testing.T) {
 		{
 			name:   "positive update test #5",
 			url:    "/update/",
-			json:   `{"id":"PollCount","type":"counter","delta":13}`,
+			json:   `{"id":"PollCount","type":"counter","delta":13, "hash":""}`,
 			method: "POST",
 			want: want{
 				code: http.StatusOK,
@@ -89,7 +89,7 @@ func TestMetricsHandler_PostUpdateMetric(t *testing.T) {
 		{
 			name:   "negative update test #6",
 			url:    "/update/",
-			json:   `{"id":"PollCount","type":"counter","delta":13}`,
+			json:   `{"id":"PollCount","type":"counter","delta":13, "hash":""}`,
 			method: "GET",
 			want: want{
 				code: http.StatusMethodNotAllowed,
@@ -98,7 +98,7 @@ func TestMetricsHandler_PostUpdateMetric(t *testing.T) {
 		{
 			name:   "negative update test #7",
 			url:    "/update/",
-			json:   `{"id":"PollCount","type":"counter","delta":13cd}`,
+			json:   `{"id":"PollCount","type":"counter","delta":13cd, "hash":""}`,
 			method: "POST",
 			want: want{
 				code: http.StatusBadRequest,
@@ -107,7 +107,7 @@ func TestMetricsHandler_PostUpdateMetric(t *testing.T) {
 		{
 			name:   "negative update test #8",
 			url:    "/update/",
-			json:   `{"id":"PollCount","type":"counter","delta":13.33}`,
+			json:   `{"id":"PollCount","type":"counter","delta":13.33, "hash":""}`,
 			method: "POST",
 			want: want{
 				code: http.StatusBadRequest,
