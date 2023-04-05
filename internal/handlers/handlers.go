@@ -72,7 +72,7 @@ func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request)
 		}
 	case "counter":
 		if delta := metric.Delta; delta != nil {
-			if crypto.ValidMAC(fmt.Sprintf("%s:counter:%d", metric.ID, metric.Delta), metric.Hash, key) {
+			if crypto.ValidMAC(fmt.Sprintf("%s:counter:%d", metric.ID, *metric.Delta), metric.Hash, key) {
 				http.Error(w, "obtained and computed hashes do not match", http.StatusBadRequest)
 				return
 			}
@@ -107,7 +107,7 @@ func (m MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
 	key := r.Context().Value("Key").(string)
 	switch metricSend.MType {
 	case "counter":
-		metricSend.Hash = crypto.Hash(fmt.Sprintf("%s:counter:%d", metricSend.ID, metricSend.Delta), key)
+		metricSend.Hash = crypto.Hash(fmt.Sprintf("%s:counter:%d", metricSend.ID, *metricSend.Delta), key)
 	case "gauge":
 		metricSend.Hash = crypto.Hash(fmt.Sprintf("%s:gauge:%f", metricSend.ID, *metricSend.Value), key)
 	default:
