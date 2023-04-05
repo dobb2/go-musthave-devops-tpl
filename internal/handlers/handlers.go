@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/crypto"
 	"html/template"
+	"log"
 	"net/http"
 	"path/filepath"
 	"strconv"
@@ -99,6 +100,15 @@ func (m MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/plain")
 		http.Error(w, "not found metric", http.StatusNotFound)
 		return
+	}
+	key := r.Context().Value("Key").(string)
+	switch metricSend.MType {
+	case "counter":
+		metricSend.Hash = crypto.Hash(fmt.Sprintf("%s:counter:%d", metricSend.ID, metricSend.Delta), key)
+	case "gauge":
+		metricSend.Hash = crypto.Hash(fmt.Sprintf("%s:gauge:%f", metricSend.ID, *metricSend.Value), key)
+	default:
+		log.Println("invalid type metric for create hash")
 	}
 
 	out, err := json.Marshal(metricSend)
