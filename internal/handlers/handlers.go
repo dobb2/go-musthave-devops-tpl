@@ -42,8 +42,8 @@ func (m MetricsHandler) GetAllMetrics(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//main := filepath.Join("internal", "static", "dynamicMetricsPage.html")
-	main := filepath.Join("..", "..", "internal", "static", "dynamicMetricsPage.html")
+	main := filepath.Join("internal", "static", "dynamicMetricsPage.html")
+	//main := filepath.Join("..", "..", "internal", "static", "dynamicMetricsPage.html")
 	tmpl, err := template.ParseFiles(main)
 	if err != nil {
 		http.Error(w, "", http.StatusBadRequest)
