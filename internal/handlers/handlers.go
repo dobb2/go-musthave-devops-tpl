@@ -118,8 +118,14 @@ func (m MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
 	switch metricSend.MType {
 	case "counter":
 		metricSend.Hash = crypto.Hash(fmt.Sprintf("%s:counter:%d", metricSend.ID, *metricSend.Delta), key)
+		log.Println(*metricSend.Delta)
+		log.Println(metricSend.Delta)
+		log.Println(metricSend.ID)
 	case "gauge":
 		metricSend.Hash = crypto.Hash(fmt.Sprintf("%s:gauge:%f", metricSend.ID, *metricSend.Value), key)
+		log.Println(*metricSend.Value)
+		log.Println(metricSend.Value)
+		log.Println(metricSend.ID)
 	default:
 		log.Println("invalid type metric for create hash")
 	}
