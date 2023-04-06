@@ -34,10 +34,8 @@ func main() {
 		datastore = cache.Create()
 	}
 
-	c := make(chan struct{})
-
 	if cfg.StoreFile != "" {
-		log.Println("do backup")
+		c := make(chan struct{})
 		backup := backup.New(datastore)
 		if cfg.Restore {
 			backup.Restore(cfg)

@@ -23,7 +23,7 @@ func New(metrics storage.MetricCreatorUpdater) MetricsHandler {
 	return MetricsHandler{storage: metrics}
 }
 
-func (m *MetricsHandler) GetPing(w http.ResponseWriter, r *http.Request) {
+func (m MetricsHandler) GetPing(w http.ResponseWriter, r *http.Request) {
 	err := m.storage.GetPing()
 	if err != nil {
 		http.Error(w, "", http.StatusInternalServerError)
@@ -34,7 +34,7 @@ func (m *MetricsHandler) GetPing(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (m *MetricsHandler) GetAllMetrics(w http.ResponseWriter, r *http.Request) {
+func (m MetricsHandler) GetAllMetrics(w http.ResponseWriter, r *http.Request) {
 	metrics, err := m.storage.GetAllMetrics()
 	w.Header().Set("Content-Type", "text/html")
 	if err != nil {
@@ -56,7 +56,7 @@ func (m *MetricsHandler) GetAllMetrics(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (m *MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request) {
+func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request) {
 	var metric metrics.Metrics
 	if err := json.NewDecoder(r.Body).Decode(&metric); err != nil {
 		http.Error(w, "invalid json", http.StatusBadRequest)
@@ -99,7 +99,7 @@ func (m *MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request
 	}
 }
 
-func (m *MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
+func (m MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
 	var metricGet metrics.Metrics
 	if err := json.NewDecoder(r.Body).Decode(&metricGet); err != nil {
 		w.Header().Set("Content-Type", "text/plain")
@@ -124,21 +124,19 @@ func (m *MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
 		log.Println("invalid type metric for create hash")
 	}
 
-	log.Println(metricSend)
-
 	out, err := json.Marshal(metricSend)
 	if err != nil {
 		w.Header().Set("Content-Type", "text/plain")
 		http.Error(w, "problem marshal metric to json", http.StatusInternalServerError)
 		return
 	}
-	log.Println(string(out))
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(out)
 }
 
-func (m *MetricsHandler) UpdateMetric(w http.ResponseWriter, r *http.Request) {
+func (m MetricsHandler) UpdateMetric(w http.ResponseWriter, r *http.Request) {
 	valueStr := chi.URLParam(r, "value")
 	nameMetric := chi.URLParam(r, "nameMetric")
 
@@ -167,7 +165,7 @@ func (m *MetricsHandler) UpdateMetric(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (m *MetricsHandler) GetMetric(w http.ResponseWriter, r *http.Request) {
+func (m MetricsHandler) GetMetric(w http.ResponseWriter, r *http.Request) {
 	typeMetric := chi.URLParam(r, "typeMetric")
 	nameMetric := chi.URLParam(r, "nameMetric")
 
