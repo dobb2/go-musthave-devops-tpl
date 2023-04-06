@@ -65,7 +65,7 @@ func main() {
 	r.Use(middleware.Compress(5))
 
 	r.Get("/", handler.GetAllMetrics)
-	r.Get("/", handlerDB.GetPing)
+	r.Get("/ping", handlerDB.GetPing)
 
 	r.Route("/update", func(r chi.Router) {
 		r.Post("/{typeMetric}/{nameMetric}/{value}", handler.UpdateMetric)
