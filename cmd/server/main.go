@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics/postgres"
-	_ "github.com/jackc/pgx/v5"
+	_ "github.com/jackc/pgx/v5/stdlib"
 
 	"github.com/dobb2/go-musthave-devops-tpl/internal/backup"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/config"
@@ -23,8 +23,7 @@ func main() {
 
 	log.Println(cfg.DatabaseDSN)
 
-	db, err := sql.Open("postgres",
-		cfg.DatabaseDSN)
+	db, err := sql.Open("pgx", cfg.DatabaseDSN)
 	if err != nil {
 		log.Println(err)
 	}
