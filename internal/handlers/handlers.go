@@ -26,6 +26,7 @@ func New(metrics storage.MetricCreatorUpdater) MetricsHandler {
 func (m MetricsHandler) GetPing(w http.ResponseWriter, r *http.Request) {
 	err := m.storage.GetPing()
 	if err != nil {
+		log.Println(err)
 		http.Error(w, "", http.StatusInternalServerError)
 		return
 	}
