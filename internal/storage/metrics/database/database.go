@@ -27,7 +27,8 @@ func (m *MetricsStorer) GetValue(typeMetric string, NameMetric string) (metrics.
 }
 
 func (m *MetricsStorer) GetAllMetrics() ([]metrics.Metrics, error) {
-	return make([]metrics.Metrics, 0, 0), nil
+
+	return make([]metrics.Metrics, 0), nil
 }
 
 func (m *MetricsStorer) GetPing() error {
