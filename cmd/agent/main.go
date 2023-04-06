@@ -20,7 +20,7 @@ func main() {
 		case <-tickerCollector.C:
 			m.CollectMetrics()
 		case <-tickerSender.C:
-			client.PutMetric(&m, cfg)
+			client.PutMetric(m, cfg)
 		}
 	}
 }
