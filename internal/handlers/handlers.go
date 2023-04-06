@@ -37,13 +37,13 @@ func (m MetricsHandler) GetPing(w http.ResponseWriter, r *http.Request) {
 func (m MetricsHandler) GetAllMetrics(w http.ResponseWriter, r *http.Request) {
 	metrics, err := m.storage.GetAllMetrics()
 	w.Header().Set("Content-Type", "text/html")
-
 	if err != nil {
 		http.Error(w, "No metrics", http.StatusBadRequest)
 		return
 	}
 
-	main := filepath.Join("internal", "static", "dynamicMetricsPage.html")
+	//main := filepath.Join("internal", "static", "dynamicMetricsPage.html")
+	main := filepath.Join("..", "..", "internal", "static", "dynamicMetricsPage.html")
 	tmpl, err := template.ParseFiles(main)
 	if err != nil {
 		http.Error(w, "", http.StatusBadRequest)
@@ -118,7 +118,6 @@ func (m MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
 	switch metricSend.MType {
 	case "counter":
 		metricSend.Hash = crypto.Hash(fmt.Sprintf("%s:counter:%d", metricSend.ID, *metricSend.Delta), key)
-
 	case "gauge":
 		metricSend.Hash = crypto.Hash(fmt.Sprintf("%s:gauge:%f", metricSend.ID, *metricSend.Value), key)
 	default:
@@ -133,6 +132,7 @@ func (m MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "problem marshal metric to json", http.StatusInternalServerError)
 		return
 	}
+	log.Println(string(out))
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(out)
