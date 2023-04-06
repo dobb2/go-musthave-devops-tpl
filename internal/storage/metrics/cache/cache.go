@@ -14,14 +14,14 @@ type Metrics struct {
 	сhan    *chan struct{}
 }
 
-func Create() Metrics {
-	return Metrics{
+func Create() *Metrics {
+	return &Metrics{
 		Metrics: map[string]metrics.Metrics{},
 		сhan:    nil,
 	}
 }
 
-func (m Metrics) UploadMetrics(metrics []metrics.Metrics) {
+func (m *Metrics) UploadMetrics(metrics []metrics.Metrics) {
 	for _, metric := range metrics {
 		m.Metrics[metric.ID] = metric
 	}
@@ -31,7 +31,7 @@ func (m *Metrics) AddChannel(c *chan struct{}) {
 	m.сhan = c
 }
 
-func (m Metrics) UpdateGauge(nameMetric string, value float64) {
+func (m *Metrics) UpdateGauge(nameMetric string, value float64) {
 	Value := value
 	metric := metrics.Metrics{
 		ID:    nameMetric,
@@ -44,7 +44,7 @@ func (m Metrics) UpdateGauge(nameMetric string, value float64) {
 	}
 }
 
-func (m Metrics) UpdateCounter(nameMetric string, value int64) {
+func (m *Metrics) UpdateCounter(nameMetric string, value int64) {
 	Delta := value
 	_, ok := m.Metrics[nameMetric]
 	if ok {
@@ -61,7 +61,7 @@ func (m Metrics) UpdateCounter(nameMetric string, value int64) {
 	}
 }
 
-func (m Metrics) GetAllMetrics() ([]metrics.Metrics, error) {
+func (m *Metrics) GetAllMetrics() ([]metrics.Metrics, error) {
 	countMetrics := len(m.Metrics)
 	c := make([]metrics.Metrics, 0, countMetrics)
 
@@ -76,7 +76,7 @@ func (m Metrics) GetAllMetrics() ([]metrics.Metrics, error) {
 	return c, nil
 }
 
-func (m Metrics) GetValue(typeMetric string, NameMetric string) (metrics.Metrics, error) {
+func (m *Metrics) GetValue(typeMetric string, NameMetric string) (metrics.Metrics, error) {
 	switch typeMetric {
 	case "gauge":
 		if metric, ok := m.Metrics[NameMetric]; ok {
@@ -105,7 +105,7 @@ func (m Metrics) GetValue(typeMetric string, NameMetric string) (metrics.Metrics
 	}
 }
 
-func (m Metrics) CollectMetrics() {
+func (m *Metrics) CollectMetrics() {
 	rand.Seed(time.Now().UnixNano())
 	var rtm runtime.MemStats
 	runtime.ReadMemStats(&rtm)
@@ -144,4 +144,8 @@ func (m Metrics) CollectMetrics() {
 	m.UpdateGauge("TotalAlloc", float64(rtm.TotalAlloc))
 	m.UpdateCounter("PollCount", 1)
 	m.UpdateGauge("RandomValue", float64(rand.Float64()))
+}
+
+func (m *Metrics) GetPing() error {
+	return nil
 }

@@ -1,6 +1,10 @@
 package main
 
 import (
+	"database/sql"
+	"github.com/dobb2/go-musthave-devops-tpl/internal/storage"
+	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics/database"
+	_ "github.com/jackc/pgx"
 	"log"
 	"net/http"
 	"time"
@@ -16,15 +20,26 @@ import (
 func main() {
 	cfg := config.CreateServerConfig()
 	r := chi.NewRouter()
-	datastore := cache.Create()
+	var datastore storage.MetricCreatorUpdater
 
-	if cfg.StoreFile != "" {
+	if cfg.DatabaseDSN != "" {
+		db, err := sql.Open("pgx",
+			cfg.DatabaseDSN)
+		if err != nil {
+			log.Println(err)
+		}
+		defer db.Close()
+		datastore = database.New(db)
+	} else {
+		datastore = cache.Create()
+	}
+
+	c := make(chan struct{})
+	if cfg.StoreFile != "" && cfg.DatabaseDSN == "" {
 		backup := backup.New(datastore)
 		if cfg.Restore {
 			backup.Restore(cfg)
 		}
-
-		c := make(chan struct{})
 
 		if cfg.StoreInterval == 0 {
 			datastore.AddChannel(&c)
@@ -54,6 +69,7 @@ func main() {
 	r.Use(middleware.Compress(5))
 
 	r.Get("/", handler.GetAllMetrics)
+	r.Get("/ping", handler.GetPing)
 
 	r.Route("/update", func(r chi.Router) {
 		r.Post("/{typeMetric}/{nameMetric}/{value}", handler.UpdateMetric)

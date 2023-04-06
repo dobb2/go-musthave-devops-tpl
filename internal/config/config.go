@@ -14,6 +14,7 @@ type Config struct {
 	Address        string        `env:"ADDRESS" envDefault:"127.0.0.1:8080"`
 	StoreFile      string        `env:"STORE_FILE" envDefault:"tmp/devops-metrics-db.json"`
 	Key            string        `env:"KEY" envDefault:""`
+	DatabaseDSN    string        `env:"DATABASE_DSN" envDefault:""`
 	ReportInterval time.Duration `env:"REPORT_INTERVAL" envDefault:"10s"`
 	PollInterval   time.Duration `env:"POLL_INTERVAL" envDefault:"2s"`
 	StoreInterval  time.Duration `env:"STORE_INTERVAL" envDefault:"300s"`
@@ -31,6 +32,7 @@ type ServerConfig struct {
 	Address       string
 	Key           string
 	StoreFile     string
+	DatabaseDSN   string
 	Restore       bool
 	StoreInterval time.Duration
 }
@@ -96,6 +98,7 @@ func CreateServerConfig() ServerConfig {
 	flag.StringVar(&cfg.Address, "a", envcfg.Address, "a string")
 	flag.StringVar(&cfg.StoreFile, "f", envcfg.StoreFile, "file store a string")
 	flag.StringVar(&cfg.Key, "k", envcfg.Key, "a string")
+	flag.StringVar(&cfg.DatabaseDSN, "d", envcfg.DatabaseDSN, "a string")
 	flag.BoolVar(&cfg.Restore, "r", envcfg.Restore, "a bool")
 	flag.DurationVar(&cfg.StoreInterval, "i", envcfg.StoreInterval, "a duration")
 	flag.Parse()
@@ -113,6 +116,11 @@ func CreateServerConfig() ServerConfig {
 	envStrFile, boolFile := os.LookupEnv("STORE_FILE")
 	if boolFile {
 		cfg.StoreFile = envStrFile
+	}
+
+	envStrDSN, boolDSN := os.LookupEnv("DATABASE_DSN")
+	if boolDSN {
+		cfg.DatabaseDSN = envStrDSN
 	}
 
 	envStrRestore, boolRestore := os.LookupEnv("RESTORE")

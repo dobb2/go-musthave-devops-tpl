@@ -9,9 +9,7 @@ type MetricCreatorUpdater interface {
 	UpdateCounter(typeMetric string, value int64)
 	GetValue(typeMetric string, NameMetric string) (metrics.Metrics, error)
 	GetAllMetrics() ([]metrics.Metrics, error)
-}
-
-type MetricsBackuper interface {
-	GetAllMetrics() ([]metrics.Metrics, error)
+	GetPing() error
 	UploadMetrics([]metrics.Metrics)
+	AddChannel(*chan struct{})
 }

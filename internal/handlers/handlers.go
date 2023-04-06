@@ -23,6 +23,17 @@ func New(metrics storage.MetricCreatorUpdater) MetricsHandler {
 	return MetricsHandler{storage: metrics}
 }
 
+func (m MetricsHandler) GetPing(w http.ResponseWriter, r *http.Request) {
+	err := m.storage.GetPing()
+	if err != nil {
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+
+}
+
 func (m MetricsHandler) GetAllMetrics(w http.ResponseWriter, r *http.Request) {
 	metrics, err := m.storage.GetAllMetrics()
 	w.Header().Set("Content-Type", "text/html")
