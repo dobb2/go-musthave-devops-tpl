@@ -21,9 +21,9 @@ func main() {
 	cfg := config.CreateServerConfig()
 	r := chi.NewRouter()
 
-	log.Println(cfg)
+	log.Println(cfg.DatabaseDSN)
 
-	db, err := sql.Open("pgx",
+	db, err := sql.Open("postgres",
 		cfg.DatabaseDSN)
 	if err != nil {
 		log.Println(err)
