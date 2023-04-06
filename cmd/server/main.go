@@ -35,7 +35,9 @@ func main() {
 	}
 
 	c := make(chan struct{})
-	if cfg.StoreFile != "" && cfg.DatabaseDSN == "" {
+
+	if cfg.StoreFile != "" {
+		log.Println("do backup")
 		backup := backup.New(datastore)
 		if cfg.Restore {
 			backup.Restore(cfg)
