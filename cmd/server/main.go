@@ -1,6 +1,8 @@
 package main
 
 import (
+	"database/sql"
+	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics/postgres"
 	"log"
 	"net/http"
 	"time"
@@ -16,7 +18,15 @@ import (
 func main() {
 	cfg := config.CreateServerConfig()
 	r := chi.NewRouter()
+
+	db, err := sql.Open("pgx",
+		cfg.DatabaseDSN)
+	if err != nil {
+		log.Println(err)
+	}
+	defer db.Close()
 	datastore := cache.Create()
+	datastoreDB := postgres.New(db)
 
 	if cfg.StoreFile != "" {
 		backup := backup.New(datastore)
@@ -45,6 +55,7 @@ func main() {
 	}
 
 	handler := handlers.New(datastore)
+	handlerDB := handlers.New(datastoreDB)
 
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
@@ -54,6 +65,7 @@ func main() {
 	r.Use(middleware.Compress(5))
 
 	r.Get("/", handler.GetAllMetrics)
+	r.Get("/", handlerDB.GetPing)
 
 	r.Route("/update", func(r chi.Router) {
 		r.Post("/{typeMetric}/{nameMetric}/{value}", handler.UpdateMetric)

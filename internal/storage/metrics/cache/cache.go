@@ -145,3 +145,7 @@ func (m Metrics) CollectMetrics() {
 	m.UpdateCounter("PollCount", 1)
 	m.UpdateGauge("RandomValue", float64(rand.Float64()))
 }
+
+func (m Metrics) GetPing() error {
+	return nil
+}

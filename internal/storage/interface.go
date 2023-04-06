@@ -9,6 +9,7 @@ type MetricCreatorUpdater interface {
 	UpdateCounter(typeMetric string, value int64)
 	GetValue(typeMetric string, NameMetric string) (metrics.Metrics, error)
 	GetAllMetrics() ([]metrics.Metrics, error)
+	GetPing() error
 }
 
 type MetricsBackuper interface {
