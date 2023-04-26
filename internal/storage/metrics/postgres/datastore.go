@@ -43,7 +43,7 @@ func (m MetricsStorer) UpdateCounter(nameMetric string, value int64) error {
 	query := `INSERT INTO Metric (id, mtype, delta) VALUES($1, 'counter', $2)
 	ON CONFLICT (id)
     	DO
-        UPDATE SET delta = $2`
+        UPDATE SET delta = (SELECT delta + $2 FROM Metric WHERE id = $1)`
 
 	_, err := m.db.Exec(query, nameMetric, value)
 	if err != nil {
