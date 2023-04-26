@@ -14,24 +14,26 @@ type Metrics struct {
 	сhan    *chan struct{}
 }
 
-func Create() Metrics {
-	return Metrics{
+func Create() *Metrics {
+	return &Metrics{
 		Metrics: map[string]metrics.Metrics{},
 		сhan:    nil,
 	}
 }
 
-func (m Metrics) UploadMetrics(metrics []metrics.Metrics) {
+func (m Metrics) UploadMetrics(metrics []metrics.Metrics) error {
 	for _, metric := range metrics {
 		m.Metrics[metric.ID] = metric
 	}
+	return nil
 }
 
-func (m *Metrics) AddChannel(c *chan struct{}) {
+func (m *Metrics) AddChannel(c *chan struct{}) error {
 	m.сhan = c
+	return nil
 }
 
-func (m Metrics) UpdateGauge(nameMetric string, value float64) {
+func (m Metrics) UpdateGauge(nameMetric string, value float64) error {
 	Value := value
 	metric := metrics.Metrics{
 		ID:    nameMetric,
@@ -42,9 +44,11 @@ func (m Metrics) UpdateGauge(nameMetric string, value float64) {
 	if m.сhan != nil {
 		*m.сhan <- struct{}{}
 	}
+
+	return nil
 }
 
-func (m Metrics) UpdateCounter(nameMetric string, value int64) {
+func (m Metrics) UpdateCounter(nameMetric string, value int64) error {
 	Delta := value
 	_, ok := m.Metrics[nameMetric]
 	if ok {
@@ -59,21 +63,23 @@ func (m Metrics) UpdateCounter(nameMetric string, value int64) {
 	if m.сhan != nil {
 		*m.сhan <- struct{}{}
 	}
+
+	return nil
 }
 
 func (m Metrics) GetAllMetrics() ([]metrics.Metrics, error) {
 	countMetrics := len(m.Metrics)
-	c := make([]metrics.Metrics, 0, countMetrics)
+	allMetric := make([]metrics.Metrics, 0, countMetrics)
 
 	if countMetrics == 0 {
-		return c, errors.New("no metrics")
+		return allMetric, errors.New("no metrics")
 	}
 
 	for _, Metric := range m.Metrics {
-		c = append(c, Metric)
+		allMetric = append(allMetric, Metric)
 	}
 
-	return c, nil
+	return allMetric, nil
 }
 
 func (m Metrics) GetValue(typeMetric string, NameMetric string) (metrics.Metrics, error) {

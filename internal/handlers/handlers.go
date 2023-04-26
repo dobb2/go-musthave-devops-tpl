@@ -16,18 +16,17 @@ import (
 )
 
 type MetricsHandler struct {
-	storage storage.MetricCreatorUpdater
+	storage storage.MetricCreatorUpdaterBackuper
 }
 
-func New(metrics storage.MetricCreatorUpdater) MetricsHandler {
+func New(metrics storage.MetricCreatorUpdaterBackuper) MetricsHandler {
 	return MetricsHandler{storage: metrics}
 }
 
 func (m MetricsHandler) GetPing(w http.ResponseWriter, r *http.Request) {
 	err := m.storage.GetPing()
 	if err != nil {
-		log.Println(err)
-		http.Error(w, "", http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-Type", "text/plain")
@@ -43,6 +42,8 @@ func (m MetricsHandler) GetAllMetrics(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//main := filepath.Join("..", "..", "internal", "static", "dynamicMetricsPage.html")
+	//Join for autotests in git
 	main := filepath.Join("internal", "static", "dynamicMetricsPage.html")
 	tmpl, err := template.ParseFiles(main)
 	if err != nil {

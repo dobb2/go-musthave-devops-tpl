@@ -2,6 +2,8 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
+	"github.com/dobb2/go-musthave-devops-tpl/internal/storage"
 	"log"
 	"net/http"
 	"time"
@@ -20,21 +22,31 @@ import (
 func main() {
 	cfg := config.CreateServerConfig()
 	r := chi.NewRouter()
-
-	log.Println(cfg.DatabaseDSN)
+	var datastore storage.MetricCreatorUpdaterBackuper
 
 	db, err := sql.Open("pgx", cfg.DatabaseDSN)
 	if err != nil {
 		log.Println(err)
 	}
 	defer db.Close()
-	datastore := cache.Create()
-	datastoreDB := postgres.New(db)
 
-	if cfg.StoreFile != "" {
+	if cfg.DatabaseDSN != "" {
+		datastore, err = postgres.Create(db)
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		fmt.Println("cache")
+		datastore = cache.Create()
+	}
+
+	if cfg.DatabaseDSN == "" && cfg.StoreFile != "" {
 		backup := backup.New(datastore)
 		if cfg.Restore {
-			backup.Restore(cfg)
+			err = backup.Restore(cfg)
+			if err != nil {
+				log.Println(err)
+			}
 		}
 
 		c := make(chan struct{})
@@ -52,13 +64,15 @@ func main() {
 
 		go func(ch chan struct{}) {
 			for range ch {
-				backup.UpdateBackup(cfg)
+				err = backup.UpdateBackup(cfg)
+				if err != nil {
+					log.Println(err)
+				}
 			}
 		}(c)
 	}
 
 	handler := handlers.New(datastore)
-	handlerDB := handlers.New(datastoreDB)
 
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
@@ -68,7 +82,7 @@ func main() {
 	r.Use(middleware.Compress(5))
 
 	r.Get("/", handler.GetAllMetrics)
-	r.Get("/ping", handlerDB.GetPing)
+	r.Get("/ping", handler.GetPing)
 
 	r.Route("/update", func(r chi.Router) {
 		r.Post("/{typeMetric}/{nameMetric}/{value}", handler.UpdateMetric)
