@@ -114,7 +114,7 @@ func (m MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Println(r.Body)
-	log.Println(metricGet.ID, metricGet.MType, *metricGet.Delta, *metricGet.Value, metricGet.Hash)
+
 	metricSend, err := m.storage.GetValue(metricGet.MType, metricGet.ID)
 	if err != nil {
 		w.Header().Set("Content-Type", "text/plain")
@@ -125,8 +125,10 @@ func (m MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
 	key := r.Context().Value("Key").(string)
 	switch metricSend.MType {
 	case "counter":
+		log.Println(metricGet.ID, metricGet.MType, *metricGet.Delta, metricGet.Hash)
 		metricSend.Hash = crypto.Hash(fmt.Sprintf("%s:counter:%d", metricSend.ID, *metricSend.Delta), key)
 	case "gauge":
+		log.Println(metricGet.ID, metricGet.MType, *metricGet.Value, metricGet.Hash)
 		metricSend.Hash = crypto.Hash(fmt.Sprintf("%s:gauge:%f", metricSend.ID, *metricSend.Value), key)
 	default:
 		log.Println("invalid type metric for create hash")
@@ -202,9 +204,9 @@ func (m MetricsHandler) PostUpdateBatchMetrics(w http.ResponseWriter, r *http.Re
 	key := r.Context().Value("Key").(string)
 
 	for i := range metrics {
-		log.Println(metrics[i].ID, metrics[i].MType, *metrics[i].Delta, *metrics[i].Value, metrics[i].Hash)
 		switch TypeMetric := metrics[i].MType; TypeMetric {
 		case "gauge":
+			log.Println(metrics[i].ID, metrics[i].MType, *metrics[i].Value, metrics[i].Hash)
 			if value := metrics[i].Value; value != nil {
 				if !crypto.ValidMAC(fmt.Sprintf("%s:gauge:%f", metrics[i].ID, *metrics[i].Value), metrics[i].Hash, key) {
 					http.Error(w, "obtained and computed hashes do not match for"+metrics[i].ID, http.StatusBadRequest)
@@ -215,6 +217,7 @@ func (m MetricsHandler) PostUpdateBatchMetrics(w http.ResponseWriter, r *http.Re
 				return
 			}
 		case "counter":
+			log.Println(metrics[i].ID, metrics[i].MType, *metrics[i].Delta, metrics[i].Hash)
 			if delta := metrics[i].Delta; delta != nil {
 				if !crypto.ValidMAC(fmt.Sprintf("%s:counter:%d", metrics[i].ID, *metrics[i].Delta), metrics[i].Hash, key) {
 					http.Error(w, "obtained and computed hashes do not match"+metrics[i].ID, http.StatusBadRequest)
