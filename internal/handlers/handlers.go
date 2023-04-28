@@ -114,6 +114,7 @@ func (m MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Println(metricGet.MType, metricGet.ID)
 	metricSend, err := m.storage.GetValue(metricGet.MType, metricGet.ID)
 	if err != nil {
 		w.Header().Set("Content-Type", "text/plain")
