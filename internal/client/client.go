@@ -13,13 +13,13 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
-func SendMetric(metric metrics.Metrics, cfg config.AgentConfig) {
+func SendMetric(metrics []metrics.Metrics, cfg config.AgentConfig) {
 	client := resty.New().
 		SetBaseURL("http://" + cfg.Address).
 		SetRetryCount(2).
 		SetRetryWaitTime(1 * time.Second)
 
-	out, err := json.Marshal(metric)
+	out, err := json.Marshal(metrics)
 	if err != nil {
 		log.Println(err)
 	}
@@ -27,7 +27,7 @@ func SendMetric(metric metrics.Metrics, cfg config.AgentConfig) {
 	resp, err := client.R().
 		SetHeader("Content-Type", "application/json").
 		SetBody(out).
-		Post("/update/")
+		Post("/updates/")
 
 	if err != nil {
 		log.Println(err)
@@ -37,6 +37,7 @@ func SendMetric(metric metrics.Metrics, cfg config.AgentConfig) {
 }
 
 func PutMetric(m *cache.Metrics, cfg config.AgentConfig) {
+	metrics := make([]metrics.Metrics, len(m.Metrics))
 	for _, Metric := range m.Metrics { // Порядок не определен
 		switch Metric.MType {
 		case "counter":
@@ -46,7 +47,7 @@ func PutMetric(m *cache.Metrics, cfg config.AgentConfig) {
 		default:
 			log.Println("invalid type metric for create hash")
 		}
-
-		SendMetric(Metric, cfg)
+		metrics = append(metrics, Metric)
 	}
+	SendMetric(metrics, cfg)
 }

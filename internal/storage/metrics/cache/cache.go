@@ -21,7 +21,7 @@ func Create() *Metrics {
 	}
 }
 
-func (m Metrics) UploadMetrics(metrics []metrics.Metrics) error {
+func (m Metrics) UpdateMetrics(metrics []metrics.Metrics) error {
 	for _, metric := range metrics {
 		m.Metrics[metric.ID] = metric
 	}

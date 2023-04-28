@@ -3,6 +3,7 @@ package postgres
 import (
 	"database/sql"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics"
+	"log"
 )
 
 type MetricsStorer struct {
@@ -115,7 +116,38 @@ func (m MetricsStorer) GetPing() error {
 	return m.db.Ping()
 }
 
-func (m MetricsStorer) UploadMetrics([]metrics.Metrics) error {
+func (m MetricsStorer) UpdateMetrics(metrics []metrics.Metrics) error {
+	tx, err := m.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	query := `INSERT INTO Metric (id, mtype, delta, val) VALUES($1, $2, $3, $4)
+	ON CONFLICT (id)
+    	DO
+        UPDATE SET 
+            delta = (SELECT delta + $2 FROM Metric WHERE id = $1)
+			value = $4
+        `
+
+	stmt, err := tx.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	for _, v := range metrics {
+		if _, err = stmt.Exec(v.ID, v.MType, v.Delta, v.Value); err != nil {
+			if err = tx.Rollback(); err != nil {
+				log.Println("update drivers: unable to rollback: %v", err)
+			}
+			return err
+		}
+	}
+
+	if err := tx.Commit(); err != nil {
+		log.Println("update drivers: unable to commit: %v", err)
+	}
 	return nil
 }
 

@@ -11,10 +11,10 @@ import (
 )
 
 type MetricsBackuper struct {
-	storage storage.MetricCreatorUpdaterBackuper
+	storage storage.MetricCreatorUpdater
 }
 
-func New(metrics storage.MetricCreatorUpdaterBackuper) MetricsBackuper {
+func New(metrics storage.MetricCreatorUpdater) MetricsBackuper {
 	return MetricsBackuper{storage: metrics}
 }
 
@@ -33,7 +33,7 @@ func (b MetricsBackuper) Restore(cfg config.ServerConfig) error {
 
 	json.Unmarshal(byteValue, &metrics)
 
-	b.storage.UploadMetrics(metrics)
+	b.storage.UpdateMetrics(metrics)
 	return nil
 }
 

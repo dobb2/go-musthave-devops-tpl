@@ -16,10 +16,10 @@ import (
 )
 
 type MetricsHandler struct {
-	storage storage.MetricCreatorUpdaterBackuper
+	storage storage.MetricCreatorUpdater
 }
 
-func New(metrics storage.MetricCreatorUpdaterBackuper) MetricsHandler {
+func New(metrics storage.MetricCreatorUpdater) MetricsHandler {
 	return MetricsHandler{storage: metrics}
 }
 
@@ -73,7 +73,10 @@ func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request)
 				return
 			}
 
-			m.storage.UpdateGauge(metric.ID, *value)
+			err := m.storage.UpdateGauge(metric.ID, *value)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
 			w.Header().Set("Content-Type", "text/plain")
 			w.WriteHeader(http.StatusOK)
 		} else {
@@ -87,7 +90,10 @@ func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request)
 				return
 			}
 
-			m.storage.UpdateCounter(metric.ID, *delta)
+			err := m.storage.UpdateCounter(metric.ID, *delta)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+			}
 			w.Header().Set("Content-Type", "text/plain")
 			w.WriteHeader(http.StatusOK)
 		} else {
@@ -183,4 +189,49 @@ func (m MetricsHandler) GetMetric(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintln(w, *strValue.Value)
 		}
 	}
+}
+
+func (m MetricsHandler) PostUpdateBatchMetrics(w http.ResponseWriter, r *http.Request) {
+	var metrics []metrics.Metrics
+	if err := json.NewDecoder(r.Body).Decode(&metrics); err != nil {
+		http.Error(w, "invalid json", http.StatusBadRequest)
+		return
+	}
+
+	key := r.Context().Value("Key").(string)
+
+	for i := range metrics {
+		switch TypeMetric := metrics[i].MType; TypeMetric {
+		case "gauge":
+			if value := metrics[i].Value; value != nil {
+				if !crypto.ValidMAC(fmt.Sprintf("%s:gauge:%f", metrics[i].ID, *metrics[i].Value), metrics[i].Hash, key) {
+					http.Error(w, "obtained and computed hashes do not match for"+metrics[i].ID, http.StatusBadRequest)
+					return
+				}
+			} else {
+				http.Error(w, "the value for"+metrics[i].ID+"does not match the type", http.StatusBadRequest)
+				return
+			}
+		case "counter":
+			if delta := metrics[i].Delta; delta != nil {
+				if !crypto.ValidMAC(fmt.Sprintf("%s:counter:%d", metrics[i].ID, *metrics[i].Delta), metrics[i].Hash, key) {
+					http.Error(w, "obtained and computed hashes do not match"+metrics[i].ID, http.StatusBadRequest)
+					return
+				}
+			} else {
+				http.Error(w, "the value for"+metrics[i].ID+"does not match the type", http.StatusBadRequest)
+				return
+			}
+		default:
+			http.Error(w, "unknown type for"+metrics[i].ID, http.StatusBadRequest)
+			return
+		}
+	}
+
+	err := m.storage.UpdateMetrics(metrics)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
 }
