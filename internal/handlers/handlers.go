@@ -124,10 +124,10 @@ func (m MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
 	key := r.Context().Value("Key").(string)
 	switch metricSend.MType {
 	case "counter":
-		log.Println(metricGet.ID, metricGet.MType, *metricGet.Delta, metricGet.Hash)
+		//log.Println(metricGet.ID, metricGet.MType, *metricGet.Delta, metricGet.Hash)
 		metricSend.Hash = crypto.Hash(fmt.Sprintf("%s:counter:%d", metricSend.ID, *metricSend.Delta), key)
 	case "gauge":
-		log.Println(metricGet.ID, metricGet.MType, *metricGet.Value, metricGet.Hash)
+		//log.Println(metricGet.ID, metricGet.MType, *metricGet.Value, metricGet.Hash)
 		metricSend.Hash = crypto.Hash(fmt.Sprintf("%s:gauge:%f", metricSend.ID, *metricSend.Value), key)
 	default:
 		log.Println("invalid type metric for create hash")
@@ -136,11 +136,10 @@ func (m MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
 	out, err := json.Marshal(metricSend)
 	if err != nil {
 		w.Header().Set("Content-Type", "text/plain")
-		log.Println("Shit happens")
 		http.Error(w, "problem marshal metric to json", http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusOK)
 	w.Write(out)
 }
