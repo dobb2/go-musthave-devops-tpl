@@ -22,7 +22,7 @@ import (
 func main() {
 	cfg := config.CreateServerConfig()
 	r := chi.NewRouter()
-	var datastore storage.MetricCreatorUpdaterBackuper
+	var datastore storage.MetricCreatorUpdater
 
 	db, err := sql.Open("pgx", cfg.DatabaseDSN)
 	if err != nil {
