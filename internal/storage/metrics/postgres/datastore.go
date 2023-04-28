@@ -126,7 +126,7 @@ func (m MetricsStorer) UpdateMetrics(metrics []metrics.Metrics) error {
 	INSERT INTO Metric (id, mtype, delta, val) VALUES($1, $2, $3, $4)
 	ON CONFLICT (id) DO
         UPDATE SET 
-            delta = (SELECT delta + $2 FROM Metric WHERE id = $1),
+            delta = (SELECT delta + $3 FROM Metric WHERE id = $1),
 			val = $4;
     `
 
