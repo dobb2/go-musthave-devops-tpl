@@ -23,7 +23,13 @@ func Create() *Metrics {
 
 func (m Metrics) UpdateMetrics(metrics []metrics.Metrics) error {
 	for _, metric := range metrics {
-		m.Metrics[metric.ID] = metric
+		if metric.MType == "counter" {
+			m.UpdateCounter(metric.ID, *metric.Delta)
+		} else if metric.MType == "gauge" {
+			m.UpdateGauge(metric.ID, *metric.Value)
+		} else {
+			return errors.New("unknown metric type")
+		}
 	}
 	return nil
 }
