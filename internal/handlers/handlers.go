@@ -113,8 +113,8 @@ func (m MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid json", http.StatusBadRequest)
 		return
 	}
-	fmt.Println(r.Body)
-	fmt.Println(metricGet.ID, metricGet.MType, *metricGet.Delta, *metricGet.Value, metricGet.Hash)
+	log.Println(r.Body)
+	log.Println(metricGet.ID, metricGet.MType, *metricGet.Delta, *metricGet.Value, metricGet.Hash)
 	metricSend, err := m.storage.GetValue(metricGet.MType, metricGet.ID)
 	if err != nil {
 		w.Header().Set("Content-Type", "text/plain")
@@ -202,7 +202,7 @@ func (m MetricsHandler) PostUpdateBatchMetrics(w http.ResponseWriter, r *http.Re
 	key := r.Context().Value("Key").(string)
 
 	for i := range metrics {
-		fmt.Println(metrics[i].ID, metrics[i].MType, *metrics[i].Delta, *metrics[i].Value, metrics[i].Hash)
+		log.Println(metrics[i].ID, metrics[i].MType, *metrics[i].Delta, *metrics[i].Value, metrics[i].Hash)
 		switch TypeMetric := metrics[i].MType; TypeMetric {
 		case "gauge":
 			if value := metrics[i].Value; value != nil {
