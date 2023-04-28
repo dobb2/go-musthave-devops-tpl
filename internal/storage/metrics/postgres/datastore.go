@@ -127,7 +127,7 @@ func (m MetricsStorer) UpdateMetrics(metrics []metrics.Metrics) error {
     	DO
         UPDATE SET 
             delta = (SELECT delta + $2 FROM Metric WHERE id = $1)
-			value = $4
+			val = $4
         `
 
 	stmt, err := tx.Prepare(query)
