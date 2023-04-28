@@ -89,6 +89,10 @@ func main() {
 		r.Post("/", handler.PostUpdateMetric)
 	})
 
+	r.Route("/updates", func(r chi.Router) {
+		r.Post("/", handler.PostUpdateBatchMetrics)
+	})
+
 	r.Route("/value", func(r chi.Router) {
 		r.Get("/{typeMetric}/{nameMetric}", handler.GetMetric)
 		r.Post("/", handler.PostGetMetric)
