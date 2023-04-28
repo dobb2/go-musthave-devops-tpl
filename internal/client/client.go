@@ -37,7 +37,7 @@ func SendMetric(metrics []metrics.Metrics, cfg config.AgentConfig) {
 }
 
 func PutMetric(m *cache.Metrics, cfg config.AgentConfig) {
-	metrics := make([]metrics.Metrics, len(m.Metrics))
+	metrics := make([]metrics.Metrics, 0, len(m.Metrics))
 	for _, Metric := range m.Metrics { // Порядок не определен
 		switch Metric.MType {
 		case "counter":
