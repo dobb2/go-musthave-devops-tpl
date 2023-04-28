@@ -205,6 +205,7 @@ func (m MetricsHandler) PostUpdateBatchMetrics(w http.ResponseWriter, r *http.Re
 		case "gauge":
 			if value := metrics[i].Value; value != nil {
 				if !crypto.ValidMAC(fmt.Sprintf("%s:gauge:%f", metrics[i].ID, *metrics[i].Value), metrics[i].Hash, key) {
+					fmt.Println(*metrics[i].Value)
 					http.Error(w, "obtained and computed hashes do not match for"+metrics[i].ID, http.StatusBadRequest)
 					return
 				}
@@ -215,6 +216,7 @@ func (m MetricsHandler) PostUpdateBatchMetrics(w http.ResponseWriter, r *http.Re
 		case "counter":
 			if delta := metrics[i].Delta; delta != nil {
 				if !crypto.ValidMAC(fmt.Sprintf("%s:counter:%d", metrics[i].ID, *metrics[i].Delta), metrics[i].Hash, key) {
+					fmt.Println(*metrics[i].Delta)
 					http.Error(w, "obtained and computed hashes do not match"+metrics[i].ID, http.StatusBadRequest)
 					return
 				}
@@ -230,7 +232,8 @@ func (m MetricsHandler) PostUpdateBatchMetrics(w http.ResponseWriter, r *http.Re
 
 	err := m.storage.UpdateMetrics(metrics)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		fmt.Println(err)
+		http.Error(w, "Problems", http.StatusInternalServerError)
 	}
 
 	w.Header().Set("Content-Type", "text/plain")
