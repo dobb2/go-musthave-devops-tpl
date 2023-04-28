@@ -113,7 +113,6 @@ func (m MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid json", http.StatusBadRequest)
 		return
 	}
-	log.Println(r.Body)
 
 	metricSend, err := m.storage.GetValue(metricGet.MType, metricGet.ID)
 	if err != nil {
@@ -206,8 +205,8 @@ func (m MetricsHandler) PostUpdateBatchMetrics(w http.ResponseWriter, r *http.Re
 	for i := range metrics {
 		switch TypeMetric := metrics[i].MType; TypeMetric {
 		case "gauge":
-			log.Println(metrics[i].ID, metrics[i].MType, *metrics[i].Value, metrics[i].Hash)
 			if value := metrics[i].Value; value != nil {
+				log.Println(metrics[i].ID, metrics[i].MType, *metrics[i].Value, metrics[i].Hash)
 				if !crypto.ValidMAC(fmt.Sprintf("%s:gauge:%f", metrics[i].ID, *metrics[i].Value), metrics[i].Hash, key) {
 					http.Error(w, "obtained and computed hashes do not match for"+metrics[i].ID, http.StatusBadRequest)
 					return
@@ -217,8 +216,8 @@ func (m MetricsHandler) PostUpdateBatchMetrics(w http.ResponseWriter, r *http.Re
 				return
 			}
 		case "counter":
-			log.Println(metrics[i].ID, metrics[i].MType, *metrics[i].Delta, metrics[i].Hash)
 			if delta := metrics[i].Delta; delta != nil {
+				log.Println(metrics[i].ID, metrics[i].MType, *metrics[i].Delta, metrics[i].Hash)
 				if !crypto.ValidMAC(fmt.Sprintf("%s:counter:%d", metrics[i].ID, *metrics[i].Delta), metrics[i].Hash, key) {
 					http.Error(w, "obtained and computed hashes do not match"+metrics[i].ID, http.StatusBadRequest)
 					return
