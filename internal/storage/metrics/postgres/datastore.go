@@ -119,6 +119,7 @@ func (m MetricsStorer) GetPing() error {
 func (m MetricsStorer) UpdateMetrics(metrics []metrics.Metrics) error {
 	tx, err := m.db.Begin()
 	if err != nil {
+		log.Println(err)
 		return err
 	}
 
@@ -132,6 +133,7 @@ func (m MetricsStorer) UpdateMetrics(metrics []metrics.Metrics) error {
 
 	stmt, err := tx.Prepare(query)
 	if err != nil {
+		log.Println(err)
 		return err
 	}
 	defer stmt.Close()
@@ -141,6 +143,7 @@ func (m MetricsStorer) UpdateMetrics(metrics []metrics.Metrics) error {
 			if err = tx.Rollback(); err != nil {
 				log.Println("update drivers: unable to rollback: ", err)
 			}
+			log.Println(err)
 			return err
 		}
 	}

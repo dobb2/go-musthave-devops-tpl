@@ -201,6 +201,7 @@ func (m MetricsHandler) PostUpdateBatchMetrics(w http.ResponseWriter, r *http.Re
 	key := r.Context().Value("Key").(string)
 
 	for i := range metrics {
+		fmt.Println(metrics[i])
 		switch TypeMetric := metrics[i].MType; TypeMetric {
 		case "gauge":
 			if value := metrics[i].Value; value != nil {
@@ -230,7 +231,7 @@ func (m MetricsHandler) PostUpdateBatchMetrics(w http.ResponseWriter, r *http.Re
 
 	err := m.storage.UpdateMetrics(metrics)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		http.Error(w, "Problems", http.StatusInternalServerError)
 	}
 
