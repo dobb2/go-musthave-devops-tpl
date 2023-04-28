@@ -132,7 +132,7 @@ func (m MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
 	default:
 		log.Println("invalid type metric for create hash")
 	}
-
+	log.Println(metricSend)
 	out, err := json.Marshal(metricSend)
 	if err != nil {
 		w.Header().Set("Content-Type", "text/plain")
