@@ -139,14 +139,15 @@ func (m MetricsStorer) UpdateMetrics(metrics []metrics.Metrics) error {
 	for _, v := range metrics {
 		if _, err = stmt.Exec(v.ID, v.MType, v.Delta, v.Value); err != nil {
 			if err = tx.Rollback(); err != nil {
-				log.Println("update drivers: unable to rollback: %v", err)
+				log.Println("update drivers: unable to rollback: ", err)
 			}
 			return err
 		}
 	}
 
 	if err := tx.Commit(); err != nil {
-		log.Println("update drivers: unable to commit: %v", err)
+		log.Println("update drivers: unable to commit: ", err)
+		return err
 	}
 	return nil
 }
