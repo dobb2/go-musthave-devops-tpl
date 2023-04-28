@@ -136,6 +136,7 @@ func (m MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
 	out, err := json.Marshal(metricSend)
 	if err != nil {
 		w.Header().Set("Content-Type", "text/plain")
+		log.Println("Shit happens")
 		http.Error(w, "problem marshal metric to json", http.StatusInternalServerError)
 		return
 	}
