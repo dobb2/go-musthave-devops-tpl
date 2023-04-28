@@ -122,13 +122,13 @@ func (m MetricsStorer) UpdateMetrics(metrics []metrics.Metrics) error {
 		return err
 	}
 
-	query := `INSERT INTO Metric (id, mtype, delta, val) VALUES($1, $2, $3, $4)
-	ON CONFLICT (id)
-    	DO
+	query := `
+	INSERT INTO Metric (id, mtype, delta, val) VALUES($1, $2, $3, $4)
+	ON CONFLICT (id) DO
         UPDATE SET 
-            delta = (SELECT delta + $2 FROM Metric WHERE id = $1)
-			val = $4
-        `
+            delta = (SELECT delta + $2 FROM Metric WHERE id = $1),
+			val = $4;
+    `
 
 	stmt, err := tx.Prepare(query)
 	if err != nil {
