@@ -114,7 +114,6 @@ func (m MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Println(metricGet.MType, metricGet.ID)
 	metricSend, err := m.storage.GetValue(metricGet.MType, metricGet.ID)
 	if err != nil {
 		w.Header().Set("Content-Type", "text/plain")
@@ -126,18 +125,11 @@ func (m MetricsHandler) PostGetMetric(w http.ResponseWriter, r *http.Request) {
 	switch metricSend.MType {
 	case "counter":
 		metricSend.Hash = crypto.Hash(fmt.Sprintf("%s:counter:%d", metricSend.ID, *metricSend.Delta), key)
-		if metricSend.Delta != nil {
-			log.Println(metricSend.ID, *metricSend.Delta, metricSend.Hash)
-		}
 	case "gauge":
 		metricSend.Hash = crypto.Hash(fmt.Sprintf("%s:gauge:%f", metricSend.ID, *metricSend.Value), key)
-		if metricSend.Value != nil {
-			log.Println(metricSend.ID, *metricSend.Value, metricSend.Hash)
-		}
 	default:
 		log.Println("invalid type metric for create hash")
 	}
-	log.Println(metricSend)
 	out, err := json.Marshal(metricSend)
 	if err != nil {
 		w.Header().Set("Content-Type", "text/plain")
@@ -245,7 +237,14 @@ func (m MetricsHandler) PostUpdateBatchMetrics(w http.ResponseWriter, r *http.Re
 		http.Error(w, "Problems", http.StatusInternalServerError)
 	}
 
+	out, err := json.Marshal(metrics)
+	if err != nil {
+		w.Header().Set("Content-Type", "text/plain")
+		http.Error(w, "problem marshal metric to json", http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	fmt.Println(w)
+	w.Write(out)
 }
