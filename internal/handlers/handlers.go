@@ -200,10 +200,12 @@ func (m MetricsHandler) GetMetric(w http.ResponseWriter, r *http.Request) {
 
 func (m MetricsHandler) PostUpdateBatchMetrics(w http.ResponseWriter, r *http.Request) {
 	var metrics []metrics.Metrics
+
 	if err := json.NewDecoder(r.Body).Decode(&metrics); err != nil {
 		http.Error(w, "invalid json", http.StatusBadRequest)
 		return
 	}
+	fmt.Println(r.Body)
 
 	key := r.Context().Value("Key").(string)
 
@@ -244,4 +246,5 @@ func (m MetricsHandler) PostUpdateBatchMetrics(w http.ResponseWriter, r *http.Re
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+	fmt.Println(w)
 }
