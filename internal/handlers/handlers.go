@@ -205,6 +205,7 @@ func (m MetricsHandler) PostUpdateBatchMetrics(w http.ResponseWriter, r *http.Re
 		return
 	}
 	log.Println(r.Body)
+	log.Println(metrics)
 
 	key := r.Context().Value("Key").(string)
 
