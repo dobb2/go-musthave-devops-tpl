@@ -205,8 +205,9 @@ func (m MetricsHandler) PostUpdateBatchMetrics(w http.ResponseWriter, r *http.Re
 		http.Error(w, "invalid json", http.StatusBadRequest)
 		return
 	}
+	fmt.Println("This")
 	fmt.Println(r.Body)
-
+	fmt.Println(metrics)
 	key := r.Context().Value("Key").(string)
 
 	for i := range metrics {
