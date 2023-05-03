@@ -2,7 +2,7 @@ package config
 
 import (
 	"flag"
-	"log"
+	"github.com/rs/zerolog"
 	"os"
 	"strconv"
 	"time"
@@ -37,11 +37,11 @@ type ServerConfig struct {
 	StoreInterval time.Duration
 }
 
-func CreateAgentConfig() AgentConfig {
+func CreateAgentConfig(logger zerolog.Logger) AgentConfig {
 	var envcfg Config
 	err := env.Parse(&envcfg)
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal().Err(err).Msg("failed parsed env config")
 	}
 
 	var cfg AgentConfig
@@ -67,7 +67,7 @@ func CreateAgentConfig() AgentConfig {
 	if boolPoll {
 		envTimePoll, err := time.ParseDuration(envStrPoll)
 		if err != nil {
-			log.Println("invalid poll interval time in env export")
+			logger.Warn().Err(err).Msg("invalid poll interval time in env export")
 		} else {
 			cfg.PollInterval = envTimePoll
 		}
@@ -77,7 +77,7 @@ func CreateAgentConfig() AgentConfig {
 	if boolReport {
 		envTimeReport, err := time.ParseDuration(envStrReport)
 		if err != nil {
-			log.Println("invalid report interval time in env export")
+			logger.Warn().Err(err).Msg("invalid report interval time in env export")
 		} else {
 			cfg.PollInterval = envTimeReport
 		}
@@ -86,11 +86,11 @@ func CreateAgentConfig() AgentConfig {
 	return cfg
 }
 
-func CreateServerConfig() ServerConfig {
+func CreateServerConfig(logger zerolog.Logger) ServerConfig {
 	var envcfg Config
 	err := env.Parse(&envcfg)
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal().Err(err).Msg("failed parsed env config")
 	}
 
 	var cfg ServerConfig
@@ -127,7 +127,7 @@ func CreateServerConfig() ServerConfig {
 	if boolRestore {
 		envBoolRestore, err := strconv.ParseBool(envStrRestore)
 		if err != nil {
-			log.Println("invalid restore bool in env export")
+			logger.Warn().Err(err).Msg("invalid restore bool in env export")
 		} else {
 			cfg.Restore = envBoolRestore
 		}
@@ -137,7 +137,7 @@ func CreateServerConfig() ServerConfig {
 	if boolStore {
 		envTimeStore, err := time.ParseDuration(envStrStore)
 		if err != nil {
-			log.Println("invalid store interval time in env export")
+			logger.Warn().Err(err).Msg("invalid store interval time in env export")
 		} else {
 			cfg.StoreInterval = envTimeStore
 		}

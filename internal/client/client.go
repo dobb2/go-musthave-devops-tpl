@@ -3,7 +3,7 @@ package client
 import (
 	"encoding/json"
 	"fmt"
-	"log"
+	"github.com/rs/zerolog"
 	"time"
 
 	"github.com/dobb2/go-musthave-devops-tpl/internal/config"
@@ -13,7 +13,7 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
-func SendMetric(metrics []metrics.Metrics, cfg config.AgentConfig) {
+func SendMetric(metrics []metrics.Metrics, cfg config.AgentConfig, logger zerolog.Logger) {
 	client := resty.New().
 		SetBaseURL("http://" + cfg.Address).
 		SetRetryCount(2).
@@ -21,7 +21,8 @@ func SendMetric(metrics []metrics.Metrics, cfg config.AgentConfig) {
 
 	out, err := json.Marshal(metrics)
 	if err != nil {
-		log.Println(err)
+		logger.Error().Err(err).Msg("unsuccessful marshal metrics to json")
+		return
 	}
 
 	resp, err := client.R().
@@ -30,13 +31,13 @@ func SendMetric(metrics []metrics.Metrics, cfg config.AgentConfig) {
 		Post("/updates/")
 
 	if err != nil {
-		log.Println(err)
+		logger.Error().Err(err).Msg("unsuccessful request")
+	} else {
+		logger.Info().Msg("Status code:" + string(resp.StatusCode()))
 	}
-
-	log.Println(resp.StatusCode())
 }
 
-func PutMetric(m *cache.Metrics, cfg config.AgentConfig) {
+func PutMetric(m *cache.Metrics, cfg config.AgentConfig, logger zerolog.Logger) {
 	metrics := make([]metrics.Metrics, 0, len(m.Metrics))
 	for _, Metric := range m.Metrics { // Порядок не определен
 		switch Metric.MType {
@@ -45,9 +46,9 @@ func PutMetric(m *cache.Metrics, cfg config.AgentConfig) {
 		case "gauge":
 			Metric.Hash = crypto.Hash(fmt.Sprintf("%s:gauge:%f", Metric.ID, *Metric.Value), cfg.Key)
 		default:
-			log.Println("invalid type metric for create hash")
+			logger.Warn().Msg("invalid type metric for create hash")
 		}
 		metrics = append(metrics, Metric)
 	}
-	SendMetric(metrics, cfg)
+	SendMetric(metrics, cfg, logger)
 }

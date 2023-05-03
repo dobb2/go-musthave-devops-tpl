@@ -1,0 +1,16 @@
+{"level":"debug","error":"invalid character 'f' after object key:value pair","time":1683145362,"message":"invalid json"}
+{"level":"debug","error":"invalid character 'c' after object key:value pair","time":1683145362,"message":"invalid json"}
+{"level":"debug","error":"json: cannot unmarshal number 13.33 into Go struct field Metrics.delta of type int64","time":1683145362,"message":"invalid json"}
+{"level":"debug","time":1683145362,"message":"the value does not match the expected type:"}
+{"level":"warn","error":"no metrics","time":1683145362,"message":"cannot get all metrics"}
+{"level":"debug","error":"strconv.ParseFloat: parsing \"933888fdfd\": invalid syntax","time":1683145362,"message":"value does not match the type"}
+{"level":"debug","error":"strconv.ParseInt: parsing \"13cd\": invalid syntax","time":1683145362,"message":"value does not match the type"}
+{"level":"debug","error":"strconv.ParseInt: parsing \"13.33\": invalid syntax","time":1683145362,"message":"value does not match the type"}
+{"level":"debug","error":"invalid character 'f' after object key:value pair","time":1683145441,"message":"invalid json"}
+{"level":"debug","error":"invalid character 'c' after object key:value pair","time":1683145441,"message":"invalid json"}
+{"level":"debug","error":"json: cannot unmarshal number 13.33 into Go struct field Metrics.delta of type int64","time":1683145441,"message":"invalid json"}
+{"level":"debug","time":1683145441,"message":"the value does not match the expected type:"}
+{"level":"warn","error":"no metrics","time":1683145441,"message":"cannot get all metrics"}
+{"level":"debug","error":"strconv.ParseFloat: parsing \"933888fdfd\": invalid syntax","time":1683145441,"message":"value does not match the type"}
+{"level":"debug","error":"strconv.ParseInt: parsing \"13cd\": invalid syntax","time":1683145441,"message":"value does not match the type"}
+{"level":"debug","error":"strconv.ParseInt: parsing \"13.33\": invalid syntax","time":1683145441,"message":"value does not match the type"}

@@ -2,9 +2,8 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
+	"github.com/dobb2/go-musthave-devops-tpl/internal/logging"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/storage"
-	"log"
 	"net/http"
 	"time"
 
@@ -20,23 +19,23 @@ import (
 )
 
 func main() {
-	cfg := config.CreateServerConfig()
+	logger := logging.CreateLogger()
+	cfg := config.CreateServerConfig(logger)
 	r := chi.NewRouter()
-	var datastore storage.MetricCreatorUpdater
 
+	var datastore storage.MetricCreatorUpdater
 	db, err := sql.Open("pgx", cfg.DatabaseDSN)
 	if err != nil {
-		log.Println(err)
+		logger.Fatal().Err(err).Msg("cannot connect to database")
 	}
 	defer db.Close()
 
 	if cfg.DatabaseDSN != "" {
 		datastore, err = postgres.Create(db)
 		if err != nil {
-			log.Fatal(err)
+			logger.Fatal().Err(err).Msg("cannot create table in database")
 		}
 	} else {
-		fmt.Println("cache")
 		datastore = cache.Create()
 	}
 
@@ -45,7 +44,9 @@ func main() {
 		if cfg.Restore {
 			err = backup.Restore(cfg)
 			if err != nil {
-				log.Println(err)
+				logger.Warn().Err(err).Msg("failed backup to cache")
+			} else {
+				logger.Info().Msg("backup success")
 			}
 		}
 
@@ -66,13 +67,13 @@ func main() {
 			for range ch {
 				err = backup.UpdateBackup(cfg)
 				if err != nil {
-					log.Println(err)
+					logger.Warn().Err(err).Msg("failed update backup file")
 				}
 			}
 		}(c)
 	}
 
-	handler := handlers.New(datastore)
+	handler := handlers.New(datastore, logger)
 
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
@@ -98,5 +99,7 @@ func main() {
 		r.Post("/", handler.PostGetMetric)
 	})
 
-	log.Fatal(http.ListenAndServe(cfg.Address, r))
+	if err := http.ListenAndServe(cfg.Address, r); err != nil {
+		logger.Fatal().Err(err).Msg("server failed")
+	}
 }

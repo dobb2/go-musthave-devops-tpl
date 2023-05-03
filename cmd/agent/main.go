@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/dobb2/go-musthave-devops-tpl/internal/logging"
 	"time"
 
 	"github.com/dobb2/go-musthave-devops-tpl/internal/client"
@@ -9,7 +10,9 @@ import (
 )
 
 func main() {
-	cfg := config.CreateAgentConfig()
+	logger := logging.CreateLogger()
+	logger.Info().Msg("Start agent")
+	cfg := config.CreateAgentConfig(logger)
 	m := cache.Create()
 
 	tickerCollector := time.NewTicker(cfg.PollInterval)
@@ -20,7 +23,7 @@ func main() {
 		case <-tickerCollector.C:
 			m.CollectMetrics()
 		case <-tickerSender.C:
-			client.PutMetric(m, cfg)
+			client.PutMetric(m, cfg, logger)
 		}
 	}
 }

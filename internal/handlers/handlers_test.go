@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"github.com/dobb2/go-musthave-devops-tpl/internal/logging"
 	"github.com/go-chi/chi/v5/middleware"
 	"io"
 	"net/http"
@@ -125,7 +126,7 @@ func TestMetricsHandler_PostUpdateMetric(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := New(cache.Create())
+			a := New(cache.Create(), logging.CreateLogger())
 
 			r := func(m MetricsHandler) chi.Router {
 				r := chi.NewRouter()
@@ -174,7 +175,7 @@ func TestMetricsHandler_GetAllMetrics(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := New(cache.Create())
+			a := New(cache.Create(), logging.CreateLogger())
 			var metric metrics.Metrics
 
 			if err := json.NewDecoder(strings.NewReader(tt.json)).Decode(&metric); err == nil {
@@ -265,7 +266,7 @@ func TestMetricsHandler_PostGetMetric(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := New(cache.Create())
+			a := New(cache.Create(), logging.CreateLogger())
 			var metric metrics.Metrics
 
 			if err := json.NewDecoder(strings.NewReader(tt.json)).Decode(&metric); err == nil && tt.added {
@@ -377,7 +378,7 @@ func TestMetricsHandler_UpdateMetric(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := New(cache.Create())
+			a := New(cache.Create(), logging.CreateLogger())
 			r := func(m MetricsHandler) chi.Router {
 				r := chi.NewRouter()
 				r.Post("/update/{typeMetric}/{nameMetric}/{value}", m.UpdateMetric)
