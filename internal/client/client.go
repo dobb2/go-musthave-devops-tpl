@@ -33,7 +33,7 @@ func SendMetric(metrics []metrics.Metrics, cfg config.AgentConfig, logger zerolo
 	if err != nil {
 		logger.Error().Err(err).Msg("unsuccessful request")
 	} else {
-		logger.Info().Msgf("Status code:", resp.StatusCode())
+		logger.Info().Msgf("Status code: %d", resp.StatusCode())
 	}
 }
 
