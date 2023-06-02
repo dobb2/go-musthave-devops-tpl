@@ -128,7 +128,7 @@ func (m *Metrics) GetValue(typeMetric string, NameMetric string) (metrics.Metric
 	}
 }
 
-func (m Metrics) GetPing() error {
+func (m *Metrics) GetPing() error {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 	return nil
