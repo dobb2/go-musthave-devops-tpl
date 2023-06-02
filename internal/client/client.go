@@ -94,22 +94,17 @@ func (m *MetricsАgent) PutMetric(inputCh chan<- metrics.Metrics) {
 		default:
 			m.logger.Warn().Msg("invalid type metric for create hash")
 		}
-		inputCh <- Metric
+		if m.config.RateLimit != 0 {
+			inputCh <- Metric
+		}
+	}
+	if m.config.RateLimit == 0 {
+		m.SendBatchMetric(cacheMetrics)
 	}
 }
 
 func (m *MetricsАgent) WorkPool(inputCh <-chan metrics.Metrics) {
-	if m.config.RateLimit == 0 {
-		buf := make([]metrics.Metrics, 0, m.config.MetricMaxAmount)
-		for metric := range inputCh {
-			buf = append(buf, metric)
-			if len(buf) == m.config.MetricMaxAmount {
-				m.logger.Info().Msg("tuta mi kak voobshe metric")
-				m.SendBatchMetric(buf)
-				buf = buf[:0]
-			}
-		}
-	} else {
+	if m.config.RateLimit > 0 {
 		workersCount := m.config.RateLimit
 		for i := 0; i < workersCount; i++ {
 			go func() {
