@@ -86,6 +86,7 @@ func (m MetricsАgent) SendMetric(metric metrics.Metrics) {
 func (m *MetricsАgent) PutMetric(inputCh chan<- metrics.Metrics) {
 	cacheMetrics, _ := m.cache.GetAllMetrics()
 	for _, Metric := range cacheMetrics { // Порядок не определен
+		m.logger.Info().Msg("put metric")
 		switch Metric.MType {
 		case "counter":
 			Metric.Hash = crypto.Hash(fmt.Sprintf("%s:counter:%d", Metric.ID, *Metric.Delta), m.config.Key)
@@ -107,11 +108,11 @@ func (m *MetricsАgent) WorkPool(inputCh <-chan metrics.Metrics) {
 			if len(buf) == m.config.MetricMaxAmount {
 				sendbuf = append(sendbuf, buf...)
 				m.SendBatchMetric(sendbuf)
+				fmt.Println(sendbuf)
 				buf = buf[:0]
 				sendbuf = sendbuf[:0]
 			}
 		}
-
 	} else {
 		workersCount := m.config.RateLimit
 		for i := 0; i < workersCount; i++ {
