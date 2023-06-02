@@ -11,21 +11,25 @@ import (
 )
 
 type Config struct {
-	Address        string        `env:"ADDRESS" envDefault:"127.0.0.1:8080"`
-	StoreFile      string        `env:"STORE_FILE" envDefault:"tmp/devops-metrics-db.json"`
-	Key            string        `env:"KEY" envDefault:""`
-	DatabaseDSN    string        `env:"DATABASE_DSN" envDefault:""`
-	ReportInterval time.Duration `env:"REPORT_INTERVAL" envDefault:"10s"`
-	PollInterval   time.Duration `env:"POLL_INTERVAL" envDefault:"2s"`
-	StoreInterval  time.Duration `env:"STORE_INTERVAL" envDefault:"300s"`
-	Restore        bool          `env:"RESTORE" envDefault:"true"`
+	Address         string        `env:"ADDRESS" envDefault:"127.0.0.1:8080"`
+	StoreFile       string        `env:"STORE_FILE" envDefault:"tmp/devops-metrics-db.json"`
+	Key             string        `env:"KEY" envDefault:""`
+	DatabaseDSN     string        `env:"DATABASE_DSN" envDefault:""`
+	ReportInterval  time.Duration `env:"REPORT_INTERVAL" envDefault:"10s"`
+	PollInterval    time.Duration `env:"POLL_INTERVAL" envDefault:"2s"`
+	StoreInterval   time.Duration `env:"STORE_INTERVAL" envDefault:"300s"`
+	Restore         bool          `env:"RESTORE" envDefault:"true"`
+	RateLimit       int           `env:"RATE_LIMIT" envDefault:"0"`
+	MetricMaxAmount int           `env:"METRIC_MAX_AMOUNT" envDefault:"37"`
 }
 
 type AgentConfig struct {
-	Address        string
-	Key            string
-	ReportInterval time.Duration
-	PollInterval   time.Duration
+	Address         string
+	Key             string
+	ReportInterval  time.Duration
+	PollInterval    time.Duration
+	RateLimit       int
+	MetricMaxAmount int
 }
 
 type ServerConfig struct {
@@ -50,6 +54,8 @@ func CreateAgentConfig(logger zerolog.Logger) AgentConfig {
 	flag.DurationVar(&cfg.ReportInterval, "r", envcfg.ReportInterval, "a duration")
 	flag.DurationVar(&cfg.PollInterval, "p", envcfg.PollInterval, "a duration")
 	flag.StringVar(&cfg.Key, "k", envcfg.Key, "a string")
+	flag.IntVar(&cfg.RateLimit, "l", envcfg.RateLimit, "a int")
+	flag.IntVar(&cfg.MetricMaxAmount, "m", envcfg.MetricMaxAmount, "a int")
 
 	flag.Parse()
 
@@ -80,6 +86,26 @@ func CreateAgentConfig(logger zerolog.Logger) AgentConfig {
 			logger.Warn().Err(err).Msg("invalid report interval time in env export")
 		} else {
 			cfg.PollInterval = envTimeReport
+		}
+	}
+
+	envStrRateLimit, boolRateLimit := os.LookupEnv("RATE_LIMIT")
+	if boolRateLimit {
+		envRateLimit, err := strconv.Atoi(envStrRateLimit)
+		if err != nil {
+			logger.Warn().Err(err).Msg("invalid rate limit int in env export")
+		} else {
+			cfg.RateLimit = envRateLimit
+		}
+	}
+
+	envStrMetricMaxAmount, boolMetricMaxAmount := os.LookupEnv("METRIC_MAX_AMOUNT")
+	if boolMetricMaxAmount {
+		envMetricMaxAmount, err := strconv.Atoi(envStrMetricMaxAmount)
+		if err != nil {
+			logger.Warn().Err(err).Msg("invalid metrics max amount int in env export")
+		} else {
+			cfg.MetricMaxAmount = envMetricMaxAmount
 		}
 	}
 

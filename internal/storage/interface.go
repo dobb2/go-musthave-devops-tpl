@@ -4,7 +4,7 @@ import (
 	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics"
 )
 
-type MetricCreatorUpdater interface {
+type MetricGetterCreatorUpdater interface {
 	UpdateGauge(string, float64) error
 	UpdateCounter(string, int64) error
 	GetValue(string, string) (metrics.Metrics, error)

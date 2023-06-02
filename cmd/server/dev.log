@@ -1,0 +1,94 @@
+{"level":"info","time":1685545936,"message":"Start agent"}
+{"level":"info","time":1685546427,"message":"Start server"}
+{"level":"info","time":1685546427,"message":"Do backup"}
+{"level":"info","time":1685546522,"message":"Start server"}
+{"level":"info","time":1685546522,"message":"Do backup"}
+{"level":"info","time":1685546522,"message":"backup success"}
+{"level":"info","time":1685546562,"message":"Start server"}
+{"level":"info","time":1685546562,"message":"backup success"}
+{"level":"warn","error":"open internal/static/dynamicMetricsPage.html: no such file or directory","time":1685546586,"message":"problem parse files for template html"}
+{"level":"warn","error":"open internal/static/dynamicMetricsPage.html: no such file or directory","time":1685546590,"message":"problem parse files for template html"}
+{"level":"info","time":1685546615,"message":"Start server"}
+{"level":"info","time":1685546615,"message":"backup success"}
+{"level":"info","time":1685546963,"message":"Start server"}
+{"level":"info","time":1685546963,"message":"backup success"}
+{"level":"info","time":1685547167,"message":"Start server"}
+{"level":"info","time":1685547167,"message":"backup success"}
+{"level":"info","time":1685547202,"message":"Start server"}
+{"level":"info","time":1685547202,"message":"backup success"}
+{"level":"info","time":1685548152,"message":"Start server"}
+{"level":"info","time":1685548152,"message":"backup success"}
+{"level":"info","time":1685548256,"message":"Start server"}
+{"level":"info","time":1685548256,"message":"backup success"}
+{"level":"info","time":1685548435,"message":"Start server"}
+{"level":"info","time":1685548435,"message":"backup success"}
+{"level":"info","time":1685548511,"message":"Start server"}
+{"level":"info","time":1685548511,"message":"backup success"}
+{"level":"info","time":1685548541,"message":"Start server"}
+{"level":"info","time":1685548541,"message":"backup success"}
+{"level":"debug","time":1685548553,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685548553,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685548553,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685548553,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685548553,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685548553,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685548553,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685548553,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685548553,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685548553,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685548553,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685548553,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685548553,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685548553,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685548553,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685548553,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685548553,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685548553,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685548553,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685548553,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685548553,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685548553,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685548553,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685548553,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685548553,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685548553,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685548553,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685548553,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685548553,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685548553,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685548553,"message":"obtained and computed hashes do not match"}
+{"level":"info","time":1685548608,"message":"Start server"}
+{"level":"info","time":1685548608,"message":"backup success"}
+{"level":"info","time":1685548770,"message":"Start server"}
+{"level":"info","time":1685548770,"message":"backup success"}
+{"level":"info","time":1685548870,"message":"Start server"}
+{"level":"info","time":1685548870,"message":"backup success"}
+{"level":"info","time":1685699528,"message":"Start server"}
+{"level":"info","time":1685699528,"message":"backup success"}
+{"level":"info","time":1685700885,"message":"Start server"}
+{"level":"info","time":1685700885,"message":"backup success"}
+{"level":"info","time":1685701020,"message":"Start server"}
+{"level":"info","time":1685701020,"message":"backup success"}
+{"level":"info","time":1685701634,"message":"Start server"}
+{"level":"info","time":1685701634,"message":"backup success"}
+{"level":"info","time":1685701667,"message":"Start server"}
+{"level":"info","time":1685701667,"message":"backup success"}
+{"level":"info","time":1685701925,"message":"Start server"}
+{"level":"info","time":1685701996,"message":"Start server"}
+{"level":"info","time":1685701996,"message":"backup success"}
+{"level":"info","time":1685702286,"message":"Start server"}
+{"level":"info","time":1685702286,"message":"backup success"}
+{"level":"info","time":1685702439,"message":"Start server"}
+{"level":"info","time":1685702439,"message":"backup success"}
+{"level":"info","time":1685702493,"message":"Start server"}
+{"level":"info","time":1685702493,"message":"backup success"}
+{"level":"info","time":1685702529,"message":"Start server"}
+{"level":"info","time":1685702529,"message":"backup success"}
+{"level":"info","time":1685702705,"message":"Start server"}
+{"level":"info","time":1685702705,"message":"backup success"}
+{"level":"info","time":1685706565,"message":"Start server"}
+{"level":"info","time":1685706565,"message":"backup success"}
+{"level":"info","time":1685706661,"message":"Start server"}
+{"level":"info","time":1685706661,"message":"backup success"}
+{"level":"info","time":1685706848,"message":"Start server"}
+{"level":"info","time":1685706848,"message":"backup success"}

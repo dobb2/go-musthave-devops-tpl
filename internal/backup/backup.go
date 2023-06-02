@@ -11,10 +11,10 @@ import (
 )
 
 type MetricsBackuper struct {
-	storage storage.MetricCreatorUpdater
+	storage storage.MetricGetterCreatorUpdater
 }
 
-func New(metrics storage.MetricCreatorUpdater) MetricsBackuper {
+func New(metrics storage.MetricGetterCreatorUpdater) MetricsBackuper {
 	return MetricsBackuper{storage: metrics}
 }
 

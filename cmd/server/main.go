@@ -20,13 +20,15 @@ import (
 
 func main() {
 	logger := logging.CreateLogger()
+	logger.Info().Msg("Start server")
+
 	cfg := config.CreateServerConfig(logger)
 	r := chi.NewRouter()
 
-	var datastore storage.MetricCreatorUpdater
+	var datastore storage.MetricGetterCreatorUpdater
 	db, err := sql.Open("pgx", cfg.DatabaseDSN)
 	if err != nil {
-		logger.Fatal().Err(err).Msg("cannot connect to database")
+		logger.Warn().Err(err).Msg("cannot connect to database")
 	}
 	defer db.Close()
 
@@ -54,6 +56,7 @@ func main() {
 
 		if cfg.StoreInterval == 0 {
 			datastore.AddChannel(&c)
+			logger.Info().Msg("add channel")
 		} else {
 			go func(c chan struct{}, duration time.Duration) {
 				ticker := time.NewTicker(duration)
