@@ -70,7 +70,7 @@ func (m MetricsАgent) SendMetric(metric metrics.Metrics) {
 		m.logger.Error().Err(err).Msg("unsuccessful marshal metrics to json")
 		return
 	}
-
+	m.logger.Info().Msg("send metric")
 	resp, err := client.R().
 		SetHeader("Content-Type", "application/json").
 		SetBody(out).
@@ -94,18 +94,20 @@ func (m *MetricsАgent) PutMetric(inputCh chan<- metrics.Metrics) {
 		default:
 			m.logger.Warn().Msg("invalid type metric for create hash")
 		}
+		m.logger.Info().Msg("put metric")
 		inputCh <- Metric
 	}
 }
 
 func (m *MetricsАgent) WorkPool(inputCh <-chan metrics.Metrics) {
 	if m.config.RateLimit == 0 {
-		m.logger.Info().Msg("work pool")
 		buf := make([]metrics.Metrics, 0, m.config.MetricMaxAmount)
 		sendbuf := make([]metrics.Metrics, 0)
 		for metric := range inputCh {
+			m.logger.Info().Msg("read metric")
 			buf = append(buf, metric)
 			if len(buf) == m.config.MetricMaxAmount {
+				m.logger.Info().Msg("tuta mi kak voobshe metric")
 				sendbuf = append(sendbuf, buf...)
 				m.SendBatchMetric(sendbuf)
 				fmt.Println(sendbuf)
