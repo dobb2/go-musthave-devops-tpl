@@ -35,7 +35,7 @@ func New(metrics MetricCreatorUpdater, logger zerolog.Logger, config config.Agen
 	}
 }
 
-func (m MetricsАgent) SendBatchMetric(metrics []metrics.Metrics) {
+func (m *MetricsАgent) SendBatchMetric(metrics []metrics.Metrics) {
 	client := resty.New().
 		SetBaseURL("http://" + m.config.Address).
 		SetRetryCount(2).
@@ -58,7 +58,7 @@ func (m MetricsАgent) SendBatchMetric(metrics []metrics.Metrics) {
 	}
 }
 
-func (m MetricsАgent) SendMetric(metric metrics.Metrics) {
+func (m *MetricsАgent) SendMetric(metric metrics.Metrics) {
 	client := resty.New().
 		SetBaseURL("http://" + m.config.Address).
 		SetRetryCount(2).
@@ -122,7 +122,7 @@ func (m *MetricsАgent) WorkPool(inputCh <-chan metrics.Metrics) {
 	}
 }
 
-func (m MetricsАgent) CollectMetrics(v *mem.VirtualMemoryStat) {
+func (m *MetricsАgent) CollectMetrics(v *mem.VirtualMemoryStat) {
 	rand.Seed(time.Now().UnixNano())
 	var rtm runtime.MemStats
 	runtime.ReadMemStats(&rtm)
