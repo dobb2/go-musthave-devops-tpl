@@ -84,28 +84,18 @@ func (m *MetricsАgent) SendMetric(metric metrics.Metrics) {
 
 func (m *MetricsАgent) PutMetric(inputCh chan<- metrics.Metrics) {
 	cacheMetrics, _ := m.cache.GetAllMetrics()
-	for _, Metric := range cacheMetrics { // Порядок не определен
-		switch Metric.MType {
+	for i := range cacheMetrics { // Порядок не определен
+		switch cacheMetrics[i].MType {
 		case "counter":
-			Metric.Hash = crypto.Hash(fmt.Sprintf("%s:counter:%d", Metric.ID, *Metric.Delta), m.config.Key)
-			m.logger.Debug().Msg(fmt.Sprintf("%s:counter:%d", Metric.ID, *Metric.Delta))
-			m.logger.Debug().Msg(m.config.Key)
-			m.logger.Debug().Msg(Metric.ID)
-			m.logger.Debug().Msg(Metric.Hash)
-			m.logger.Debug().Msg(fmt.Sprintf("%d", *Metric.Delta))
+			cacheMetrics[i].Hash = crypto.Hash(fmt.Sprintf("%s:counter:%d", cacheMetrics[i].ID, *cacheMetrics[i].Delta), m.config.Key)
 		case "gauge":
-			Metric.Hash = crypto.Hash(fmt.Sprintf("%s:gauge:%f", Metric.ID, *Metric.Value), m.config.Key)
-			m.logger.Debug().Msg(fmt.Sprintf("%s:gauge:%f", Metric.ID, *Metric.Value))
-			m.logger.Debug().Msg(m.config.Key)
-			m.logger.Debug().Msg(Metric.ID)
-			m.logger.Debug().Msg(Metric.Hash)
-			m.logger.Debug().Msg(fmt.Sprintf("%f", *Metric.Value))
+			cacheMetrics[i].Hash = crypto.Hash(fmt.Sprintf("%s:gauge:%f", cacheMetrics[i].ID, *cacheMetrics[i].Value), m.config.Key)
 		default:
 			m.logger.Warn().Msg("invalid type metric for create hash")
 		}
 
 		if m.config.RateLimit != 0 {
-			inputCh <- Metric
+			inputCh <- cacheMetrics[i]
 		}
 	}
 	if m.config.RateLimit == 0 {

@@ -98,3 +98,20 @@
 {"level":"info","time":1685889705,"message":"backup success"}
 {"level":"info","time":1685891095,"message":"Start server"}
 {"level":"info","time":1685891095,"message":"backup success"}
+{"level":"info","time":1685893442,"message":"Start server"}
+{"level":"info","time":1685893442,"message":"backup success"}
+{"level":"debug","time":1685893447,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685893447,"message":"ca801b1f8bb6894ede69e63b8ea0b1f3a6a5d9bee1535d9e106c0a8d9d714fd1"}
+{"level":"debug","time":1685893447,"message":"OtherSys"}
+{"level":"debug","time":1685893447,"message":"gauge"}
+{"level":"debug","time":1685893447,"message":"333"}
+{"level":"debug","time":1685893447,"message":"Hash"}
+{"level":"debug","time":1685893447,"message":"927211.000000"}
+{"level":"info","time":1685893553,"message":"Start server"}
+{"level":"info","time":1685893553,"message":"backup success"}
+{"level":"debug","time":1685893562,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685893637,"message":"obtained and computed hashes do not match"}
+{"level":"info","time":1685893698,"message":"Start server"}
+{"level":"info","time":1685893698,"message":"backup success"}
+{"level":"debug","time":1685893701,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685893820,"message":"obtained and computed hashes do not match"}

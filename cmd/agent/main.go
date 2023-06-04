@@ -16,7 +16,6 @@ func main() {
 	logger := logging.CreateLogger()
 	logger.Info().Msg("Start agent")
 	cfg := config.CreateAgentConfig(logger)
-	logger.Info().Msg("Key" + cfg.Key)
 	m := cache.Create()
 
 	agent := client.New(m, logger, cfg)
