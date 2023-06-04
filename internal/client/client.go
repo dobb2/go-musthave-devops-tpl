@@ -46,7 +46,6 @@ func (m MetricsАgent) SendBatchMetric(metrics []metrics.Metrics) {
 		m.logger.Error().Err(err).Msg("unsuccessful marshal metrics to json")
 		return
 	}
-	m.logger.Info().Msg("send metric")
 	resp, err := client.R().
 		SetHeader("Content-Type", "application/json").
 		SetBody(out).
@@ -158,5 +157,4 @@ func (m MetricsАgent) CollectMetrics(v *mem.VirtualMemoryStat) {
 	m.cache.UpdateGauge("TotalMemory", float64(v.Total))
 	m.cache.UpdateGauge("FreeMemory", float64(v.Free))
 	m.cache.UpdateGauge("CPUutilization1", float64(runtime.NumCPU()))
-
 }

@@ -79,6 +79,10 @@ func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request)
 		if value := metric.Value; value != nil {
 			if !crypto.ValidMAC(fmt.Sprintf("%s:gauge:%f", metric.ID, *metric.Value), metric.Hash, key) {
 				m.logger.Debug().Msg("obtained and computed hashes do not match")
+				m.logger.Debug().Msg("Key" + key)
+				m.logger.Debug().Msg("Hash" + metric.Hash)
+
+				m.logger.Debug().Msg(fmt.Sprintf("%f", *metric.Value))
 				http.Error(w, "obtained and computed hashes do not match", http.StatusBadRequest)
 				return
 			}
