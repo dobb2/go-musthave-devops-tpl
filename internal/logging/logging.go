@@ -1,9 +1,10 @@
 package logging
 
 import (
+	"os"
+
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/pkgerrors"
-	"os"
 )
 
 func CreateLogger() zerolog.Logger {

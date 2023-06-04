@@ -2,8 +2,9 @@ package cache
 
 import (
 	"errors"
-	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics"
 	"sync"
+
+	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics"
 )
 
 type Metrics struct {

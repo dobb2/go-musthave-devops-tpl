@@ -2,10 +2,11 @@ package config
 
 import (
 	"flag"
-	"github.com/rs/zerolog"
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/rs/zerolog"
 
 	"github.com/caarlos0/env/v7"
 )

@@ -3,13 +3,14 @@ package client
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/rs/zerolog"
-	"github.com/shirou/gopsutil/v3/cpu"
-	"github.com/shirou/gopsutil/v3/mem"
 	"math/rand"
 	"runtime"
 	"strconv"
 	"time"
+
+	"github.com/rs/zerolog"
+	"github.com/shirou/gopsutil/v3/cpu"
+	"github.com/shirou/gopsutil/v3/mem"
 
 	"github.com/dobb2/go-musthave-devops-tpl/internal/config"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/crypto"

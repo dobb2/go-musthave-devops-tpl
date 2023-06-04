@@ -2,10 +2,11 @@ package main
 
 import (
 	"database/sql"
-	"github.com/dobb2/go-musthave-devops-tpl/internal/logging"
-	"github.com/dobb2/go-musthave-devops-tpl/internal/storage"
 	"net/http"
 	"time"
+
+	"github.com/dobb2/go-musthave-devops-tpl/internal/logging"
+	"github.com/dobb2/go-musthave-devops-tpl/internal/storage"
 
 	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics/postgres"
 	_ "github.com/jackc/pgx/v5/stdlib"

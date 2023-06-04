@@ -3,6 +3,7 @@ package postgres
 import (
 	"database/sql"
 	"fmt"
+
 	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics"
 )
 
