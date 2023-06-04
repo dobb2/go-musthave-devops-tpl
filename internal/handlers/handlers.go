@@ -244,6 +244,7 @@ func (m MetricsHandler) PostUpdateBatchMetrics(w http.ResponseWriter, r *http.Re
 			if value := metrics[i].Value; value != nil {
 				if !crypto.ValidMAC(fmt.Sprintf("%s:gauge:%f", metrics[i].ID, *metrics[i].Value), metrics[i].Hash, key) {
 					m.logger.Debug().Msg("obtained and computed hashes do not match")
+					m.logger.Debug().Msg(crypto.Hash(fmt.Sprintf("%s:gauge:%f", metrics[i].ID, *metrics[i].Value), key))
 					m.logger.Debug().Msg(metrics[i].ID)
 					m.logger.Debug().Msg("gauge")
 					m.logger.Debug().Msg("Key" + key)
