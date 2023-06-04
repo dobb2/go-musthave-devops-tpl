@@ -4,7 +4,6 @@ import (
 	"github.com/dobb2/go-musthave-devops-tpl/internal/client"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/logging"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics"
-	"github.com/shirou/gopsutil/v3/mem"
 	"time"
 
 	"github.com/dobb2/go-musthave-devops-tpl/internal/config"
@@ -12,7 +11,6 @@ import (
 )
 
 func main() {
-	v, _ := mem.VirtualMemory()
 	logger := logging.CreateLogger()
 	logger.Info().Msg("Start agent")
 	cfg := config.CreateAgentConfig(logger)
@@ -30,7 +28,7 @@ func main() {
 	for {
 		select {
 		case <-tickerCollector.C:
-			go agent.CollectMetrics(v)
+			go agent.CollectMetrics()
 		case <-tickerSender.C:
 			go agent.PutMetric(MetricCh)
 		}

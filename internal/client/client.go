@@ -4,15 +4,21 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/rs/zerolog"
+	"github.com/shirou/gopsutil/v3/cpu"
 	"github.com/shirou/gopsutil/v3/mem"
 	"math/rand"
 	"runtime"
+	"strconv"
 	"time"
 
 	"github.com/dobb2/go-musthave-devops-tpl/internal/config"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/crypto"
 	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics"
 	"github.com/go-resty/resty/v2"
+)
+
+const (
+	DefaultProtocol = "http://"
 )
 
 type MetricCreatorUpdater interface {
@@ -22,22 +28,31 @@ type MetricCreatorUpdater interface {
 }
 
 type MetricsАgent struct {
-	cache  MetricCreatorUpdater
-	logger zerolog.Logger
-	config config.AgentConfig
+	cache           MetricCreatorUpdater
+	logger          zerolog.Logger
+	config          config.AgentConfig
+	CPUutilLastTime time.Time
+	CPUtime         []float64
 }
 
 func New(metrics MetricCreatorUpdater, logger zerolog.Logger, config config.AgentConfig) MetricsАgent {
+	cpuStat, err := cpu.Times(true)
+	if err != nil {
+		logger.Error().Err(err).Msg("unsuccessful get num cpu")
+	}
+	numCPU := len(cpuStat)
+
 	return MetricsАgent{
-		cache:  metrics,
-		logger: logger,
-		config: config,
+		cache:   metrics,
+		logger:  logger,
+		config:  config,
+		CPUtime: make([]float64, numCPU),
 	}
 }
 
 func (m *MetricsАgent) SendBatchMetric(metrics []metrics.Metrics) {
 	client := resty.New().
-		SetBaseURL("http://" + m.config.Address).
+		SetBaseURL(DefaultProtocol + m.config.Address).
 		SetRetryCount(2).
 		SetRetryWaitTime(1 * time.Second)
 
@@ -60,7 +75,7 @@ func (m *MetricsАgent) SendBatchMetric(metrics []metrics.Metrics) {
 
 func (m *MetricsАgent) SendMetric(metric metrics.Metrics) {
 	client := resty.New().
-		SetBaseURL("http://" + m.config.Address).
+		SetBaseURL(DefaultProtocol + m.config.Address).
 		SetRetryCount(2).
 		SetRetryWaitTime(1 * time.Second)
 
@@ -116,7 +131,11 @@ func (m *MetricsАgent) WorkPool(inputCh <-chan metrics.Metrics) {
 	}
 }
 
-func (m *MetricsАgent) CollectMetrics(v *mem.VirtualMemoryStat) {
+func (m *MetricsАgent) CollectMetrics() {
+	v, err := mem.VirtualMemory()
+	if err != nil {
+		m.logger.Error().Err(err).Msg("Problem with collect metrics with gopsutil")
+	}
 	rand.Seed(time.Now().UnixNano())
 	var rtm runtime.MemStats
 	runtime.ReadMemStats(&rtm)
@@ -155,7 +174,20 @@ func (m *MetricsАgent) CollectMetrics(v *mem.VirtualMemoryStat) {
 	m.cache.UpdateGauge("TotalAlloc", float64(rtm.TotalAlloc))
 	m.cache.UpdateCounter("PollCount", 1)
 	m.cache.UpdateGauge("RandomValue", float64(rand.Float64()))
+
 	m.cache.UpdateGauge("TotalMemory", float64(v.Total))
 	m.cache.UpdateGauge("FreeMemory", float64(v.Free))
-	m.cache.UpdateGauge("CPUutilization1", float64(runtime.NumCPU()))
+
+	timeNow := time.Now()
+	timeDiff := timeNow.Sub(m.CPUutilLastTime)
+	cpus, err := cpu.Times(true)
+	if err != nil {
+		m.logger.Error().Err(err).Msg("Problem with collect cpu info with gopsutil")
+	}
+	for i := range cpus {
+		newCPUTime := cpus[i].User + cpus[i].System
+		cpuUtilization := (newCPUTime - m.CPUtime[i]) * 1000 / float64(timeDiff.Milliseconds())
+		m.cache.UpdateGauge("CPUutilization"+strconv.Itoa(i+1), cpuUtilization)
+		m.CPUtime[i] = newCPUTime
+	}
 }

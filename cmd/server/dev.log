@@ -115,3 +115,9 @@
 {"level":"info","time":1685893698,"message":"backup success"}
 {"level":"debug","time":1685893701,"message":"obtained and computed hashes do not match"}
 {"level":"debug","time":1685893820,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685896426,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685896436,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685896446,"message":"obtained and computed hashes do not match"}
+{"level":"debug","time":1685896456,"message":"obtained and computed hashes do not match"}
+{"level":"info","time":1685896468,"message":"Start server"}
+{"level":"info","time":1685896468,"message":"backup success"}

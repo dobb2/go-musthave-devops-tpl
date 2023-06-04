@@ -5413,3 +5413,11 @@
 {"level":"debug","time":1685893820}
 {"level":"info","time":1685893928,"message":"Start agent"}
 {"level":"info","time":1685893938,"message":"Status code: 200"}
+{"level":"info","time":1685895780,"message":"Start agent"}
+{"level":"info","time":1685896416,"message":"Start agent"}
+{"level":"info","time":1685896426,"message":"Status code: 400"}
+{"level":"info","time":1685896436,"message":"Status code: 400"}
+{"level":"info","time":1685896446,"message":"Status code: 400"}
+{"level":"info","time":1685896456,"message":"Status code: 400"}
+{"level":"info","time":1685896462,"message":"Start agent"}
+{"level":"info","time":1685896472,"message":"Status code: 200"}
