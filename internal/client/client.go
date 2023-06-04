@@ -88,11 +88,18 @@ func (m *MetricsАgent) PutMetric(inputCh chan<- metrics.Metrics) {
 		switch Metric.MType {
 		case "counter":
 			Metric.Hash = crypto.Hash(fmt.Sprintf("%s:counter:%d", Metric.ID, *Metric.Delta), m.config.Key)
+			m.logger.Debug().Msg(Metric.ID)
+			m.logger.Debug().Msg(Metric.Hash)
+			m.logger.Debug().Msg(fmt.Sprintf("%f", *Metric.Delta))
 		case "gauge":
 			Metric.Hash = crypto.Hash(fmt.Sprintf("%s:gauge:%f", Metric.ID, *Metric.Value), m.config.Key)
+			m.logger.Debug().Msg(Metric.ID)
+			m.logger.Debug().Msg(Metric.Hash)
+			m.logger.Debug().Msg(fmt.Sprintf("%f", *Metric.Value))
 		default:
 			m.logger.Warn().Msg("invalid type metric for create hash")
 		}
+
 		if m.config.RateLimit != 0 {
 			inputCh <- Metric
 		}
