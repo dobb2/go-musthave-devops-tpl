@@ -105,7 +105,7 @@ func (m MetricsHandler) PostUpdateMetric(w http.ResponseWriter, r *http.Request)
 				m.logger.Debug().Msg("counter")
 				m.logger.Debug().Msg("Key" + key)
 				m.logger.Debug().Msg("Hash" + metric.Hash)
-				m.logger.Debug().Msg(fmt.Sprintf("%f", *metric.Delta))
+				m.logger.Debug().Msg(fmt.Sprintf("%d", *metric.Delta))
 				m.logger.Debug().Msg("obtained and computed hashes do not match")
 				http.Error(w, "obtained and computed hashes do not match", http.StatusBadRequest)
 				return
@@ -263,7 +263,7 @@ func (m MetricsHandler) PostUpdateBatchMetrics(w http.ResponseWriter, r *http.Re
 					m.logger.Debug().Msg("counter")
 					m.logger.Debug().Msg("Key" + key)
 					m.logger.Debug().Msg("Hash" + metrics[i].Hash)
-					m.logger.Debug().Msg(fmt.Sprintf("%f", *metrics[i].Delta))
+					m.logger.Debug().Msg(fmt.Sprintf("%d", *metrics[i].Delta))
 					http.Error(w, "", http.StatusBadRequest)
 					return
 				}
