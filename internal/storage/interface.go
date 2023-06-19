@@ -4,14 +4,12 @@ import (
 	"github.com/dobb2/go-musthave-devops-tpl/internal/storage/metrics"
 )
 
-type MetricCreatorUpdater interface {
-	UpdateGauge(typeMetric string, value float64)
-	UpdateCounter(typeMetric string, value int64)
-	GetValue(typeMetric string, NameMetric string) (metrics.Metrics, error)
+type MetricGetterCreatorUpdater interface {
+	UpdateGauge(string, float64) error
+	UpdateCounter(string, int64) error
+	GetValue(string, string) (metrics.Metrics, error)
 	GetAllMetrics() ([]metrics.Metrics, error)
-}
-
-type MetricsBackuper interface {
-	GetAllMetrics() ([]metrics.Metrics, error)
-	UploadMetrics([]metrics.Metrics)
+	GetPing() error
+	UpdateMetrics([]metrics.Metrics) error
+	AddChannel(*chan struct{}) error
 }

@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"encoding/json"
+	"github.com/dobb2/go-musthave-devops-tpl/internal/logging"
+	"github.com/go-chi/chi/v5/middleware"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -43,7 +45,7 @@ func TestMetricsHandler_PostUpdateMetric(t *testing.T) {
 		{
 			name:   "positive update test #1",
 			url:    "/update/",
-			json:   `{"id":"HeapInuse","type":"gauge","value":933888.43}`,
+			json:   `{"id":"HeapInuse","type":"gauge","value":933888.43, "hash":""}`,
 			method: "POST",
 			want: want{
 				code: http.StatusOK,
@@ -52,7 +54,7 @@ func TestMetricsHandler_PostUpdateMetric(t *testing.T) {
 		{
 			name:   "negative update test #2",
 			url:    "/update/",
-			json:   `{"id":"HeapInuse","type":"gauge","value":933888.43}`,
+			json:   `{"id":"HeapInuse","type":"gauge","value":933888.43, "hash":""}`,
 			method: "GET",
 			want: want{
 				code: http.StatusMethodNotAllowed,
@@ -61,7 +63,7 @@ func TestMetricsHandler_PostUpdateMetric(t *testing.T) {
 		{
 			name:   "negative update test #3",
 			url:    "/update/",
-			json:   `{"id":"HeapInuse","type":"gauge","value":933888fdfd}`,
+			json:   `{"id":"HeapInuse","type":"gauge","value":933888fdfd, "hash":""}`,
 			method: "POST",
 			want: want{
 				code: http.StatusBadRequest,
@@ -79,7 +81,7 @@ func TestMetricsHandler_PostUpdateMetric(t *testing.T) {
 		{
 			name:   "positive update test #5",
 			url:    "/update/",
-			json:   `{"id":"PollCount","type":"counter","delta":13}`,
+			json:   `{"id":"PollCount","type":"counter","delta":13, "hash":""}`,
 			method: "POST",
 			want: want{
 				code: http.StatusOK,
@@ -88,7 +90,7 @@ func TestMetricsHandler_PostUpdateMetric(t *testing.T) {
 		{
 			name:   "negative update test #6",
 			url:    "/update/",
-			json:   `{"id":"PollCount","type":"counter","delta":13}`,
+			json:   `{"id":"PollCount","type":"counter","delta":13, "hash":""}`,
 			method: "GET",
 			want: want{
 				code: http.StatusMethodNotAllowed,
@@ -97,7 +99,7 @@ func TestMetricsHandler_PostUpdateMetric(t *testing.T) {
 		{
 			name:   "negative update test #7",
 			url:    "/update/",
-			json:   `{"id":"PollCount","type":"counter","delta":13cd}`,
+			json:   `{"id":"PollCount","type":"counter","delta":13cd, "hash":""}`,
 			method: "POST",
 			want: want{
 				code: http.StatusBadRequest,
@@ -106,7 +108,7 @@ func TestMetricsHandler_PostUpdateMetric(t *testing.T) {
 		{
 			name:   "negative update test #8",
 			url:    "/update/",
-			json:   `{"id":"PollCount","type":"counter","delta":13.33}`,
+			json:   `{"id":"PollCount","type":"counter","delta":13.33, "hash":""}`,
 			method: "POST",
 			want: want{
 				code: http.StatusBadRequest,
@@ -124,10 +126,11 @@ func TestMetricsHandler_PostUpdateMetric(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := New(cache.Create())
+			a := New(cache.Create(), logging.CreateLogger())
 
 			r := func(m MetricsHandler) chi.Router {
 				r := chi.NewRouter()
+				r.Use(middleware.WithValue("Key", ""))
 				r.Post("/update/", m.PostUpdateMetric)
 				return r
 			}(a)
@@ -172,7 +175,7 @@ func TestMetricsHandler_GetAllMetrics(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := New(cache.Create())
+			a := New(cache.Create(), logging.CreateLogger())
 			var metric metrics.Metrics
 
 			if err := json.NewDecoder(strings.NewReader(tt.json)).Decode(&metric); err == nil {
@@ -263,7 +266,7 @@ func TestMetricsHandler_PostGetMetric(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := New(cache.Create())
+			a := New(cache.Create(), logging.CreateLogger())
 			var metric metrics.Metrics
 
 			if err := json.NewDecoder(strings.NewReader(tt.json)).Decode(&metric); err == nil && tt.added {
@@ -277,6 +280,7 @@ func TestMetricsHandler_PostGetMetric(t *testing.T) {
 
 			r := func(m MetricsHandler) chi.Router {
 				r := chi.NewRouter()
+				r.Use(middleware.WithValue("Key", ""))
 				r.Post("/value/", a.PostGetMetric)
 				return r
 			}(a)
@@ -374,7 +378,7 @@ func TestMetricsHandler_UpdateMetric(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			a := New(cache.Create())
+			a := New(cache.Create(), logging.CreateLogger())
 			r := func(m MetricsHandler) chi.Router {
 				r := chi.NewRouter()
 				r.Post("/update/{typeMetric}/{nameMetric}/{value}", m.UpdateMetric)
